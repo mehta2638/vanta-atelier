@@ -1,26 +1,235 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────
+   VANTA — design tokens
+   ───────────────────────────────────────────── */
+@theme {
+  --color-black: #0a0a0b;
+  --color-graphite-950: #0d0d0f;
+  --color-graphite-900: #111113;
+  --color-graphite-800: #18181b;
+  --color-graphite-700: #232327;
+  --color-offwhite: #edebe6;
+  --color-muted: #8b8a86;
+  --color-subtle: #5d5c59;
+  --color-line: rgb(237 235 230 / 0.08);
+  --color-line-strong: rgb(237 235 230 / 0.16);
+  --color-titanium: #9fb4c7;
+
+  --font-display: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --font-serif: var(--font-cormorant), ui-serif, Georgia, serif;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --breakpoint-xs: 26rem;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --gutter: 20px;
+  --header-h: 72px;
+  color-scheme: dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@media (min-width: 768px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --gutter: 40px;
+    --header-h: 84px;
   }
 }
 
+html {
+  background: var(--color-black);
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-black);
+  color: var(--color-offwhite);
+  font-family: var(--font-sans);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-titanium);
+  color: var(--color-black);
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-titanium);
+  outline-offset: 4px;
+}
+
+/* Lenis */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────
+   Utilities
+   ───────────────────────────────────────────── */
+@utility container-x {
+  width: 100%;
+  max-width: 1600px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+@utility text-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 0.9;
+}
+
+@utility text-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Единая монохромная обработка временных фото.
+   Для финальных фото достаточно убрать класс или ослабить фильтр. */
+@utility grade {
+  filter: grayscale(1) contrast(1.12) brightness(0.78);
+}
+
+/* Editorial-курсив для акцентных слов */
+@utility text-serif-accent {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+}
+
+/* Film grain — very low opacity, adds a photographic texture */
+@utility grain {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Hero-обложка: сцена масштабируется от --w и
+   привязана к линии колёс --yc (см. Hero.tsx)
+   ───────────────────────────────────────────── */
+.cover-stage {
+  width: var(--w);
+  height: calc(var(--w) * 1.25);
+  top: calc(var(--yc) - var(--w) * 0.825);
+}
+
+/* Фон кадра растворяется в чёрном по краям */
+.cover-mask {
+  -webkit-mask-image:
+    linear-gradient(to bottom, transparent 6%, #000 32%, #000 78%, transparent 98%),
+    linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    linear-gradient(to bottom, transparent 6%, #000 32%, #000 78%, transparent 98%),
+    linear-gradient(to right, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  mask-composite: intersect;
+}
+
+/* Кадр раскрывается из горизонтальной световой щели */
+.cover-open {
+  animation: open-y 1.9s var(--ease-in-out-quart) 0.55s both;
+}
+
+@keyframes open-y {
+  from {
+    clip-path: inset(50% 0 50% 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.slit-h {
+  opacity: 0;
+  transform: scaleX(0);
+  box-shadow: 0 0 24px 1px rgb(237 235 230 / 0.35);
+  animation: slit-h 1.6s var(--ease-in-out-quart) 0.1s both;
+}
+
+@keyframes slit-h {
+  0% {
+    opacity: 1;
+    transform: scaleX(0);
+  }
+  40% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slit-h {
+    display: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   Главы
+   ───────────────────────────────────────────── */
+/* Глава I: техническая сетка чертежа */
+.blueprint {
+  background-image:
+    linear-gradient(rgb(159 180 199 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(159 180 199 / 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
+  background-position: center;
+}
+
+/* Глава II: линии скорости */
+.speed-line {
+  animation: speed 3.6s var(--ease-in-out-quart) infinite;
+}
+
+@keyframes speed {
+  from {
+    transform: translateX(110%);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-260%);
+    opacity: 0;
+  }
 }
