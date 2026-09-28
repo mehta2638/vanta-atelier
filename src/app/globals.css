@@ -14,7 +14,18 @@
   --color-subtle: #5d5c59;
   --color-line: rgb(237 235 230 / 0.08);
   --color-line-strong: rgb(237 235 230 / 0.16);
-  --color-titanium: #9fb4c7;
+
+  /* Акценты глав: текст / линии / свечение.
+     Цвет всегда означает конкретный автомобиль. */
+  --color-porsche: #d65a4c;
+  --color-porsche-line: #8e1f2d;
+  --color-porsche-glow: #6b1520;
+  --color-bmw: #5a93dc;
+  --color-bmw-line: #1f4f8f;
+  --color-bmw-glow: #15315a;
+  --color-merc: #cdb185;
+  --color-merc-line: #a8845a;
+  --color-merc-glow: #6e5436;
 
   --font-display: var(--font-inter-tight), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -56,13 +67,30 @@ body {
 }
 
 ::selection {
-  background: var(--color-titanium);
+  background: var(--color-offwhite);
   color: var(--color-black);
 }
 
 :focus-visible {
-  outline: 1px solid var(--color-titanium);
+  outline: 1px solid rgb(237 235 230 / 0.7);
   outline-offset: 4px;
+}
+
+/* Контекст главы: компоненты берут цвет из --accent* */
+.accent-porsche {
+  --accent: var(--color-porsche);
+  --accent-line: var(--color-porsche-line);
+  --accent-glow: var(--color-porsche-glow);
+}
+.accent-bmw {
+  --accent: var(--color-bmw);
+  --accent-line: var(--color-bmw-line);
+  --accent-glow: var(--color-bmw-glow);
+}
+.accent-mercedes {
+  --accent: var(--color-merc);
+  --accent-line: var(--color-merc-line);
+  --accent-glow: var(--color-merc-glow);
 }
 
 /* Lenis */
@@ -209,8 +237,8 @@ html.lenis body {
 /* Глава I: техническая сетка чертежа */
 .blueprint {
   background-image:
-    linear-gradient(rgb(159 180 199 / 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(159 180 199 / 0.05) 1px, transparent 1px);
+    linear-gradient(rgb(142 31 45 / 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(142 31 45 / 0.13) 1px, transparent 1px);
   background-size: 64px 64px;
   background-position: center;
 }

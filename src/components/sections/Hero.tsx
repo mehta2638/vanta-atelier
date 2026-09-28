@@ -49,7 +49,7 @@ export function Hero() {
       id="top"
       ref={ref}
       onPointerMove={onPointerMove}
-      className="relative h-svh min-h-[600px] overflow-hidden bg-black"
+      className="accent-porsche relative h-svh min-h-[600px] overflow-hidden bg-black"
     >
       {/* ── Сцена ─────────────────────────────── */}
       <motion.div
@@ -69,6 +69,11 @@ export function Hero() {
             className="object-cover"
           />
         </div>
+        {/* Едва заметный бордовый ореол за кузовом */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-[radial-gradient(ellipse_46%_20%_at_54%_50%,var(--color-porsche-glow),transparent_72%)] opacity-50 mix-blend-screen"
+        />
 
         {/* «911» — между фоном и машиной */}
         <motion.div style={{ y: numY, x: smx }} className="absolute inset-x-0 bottom-[57.5%]">
@@ -117,7 +122,9 @@ export function Hero() {
         <div className="container-x relative flex h-full flex-col pt-[calc(var(--header-h)+clamp(12px,2.4vh,32px))] pb-[max(20px,env(safe-area-inset-bottom))] lg:pb-[clamp(24px,4vh,44px)]">
           <Fade delay={2.1} className="flex items-center gap-4">
             <p className="text-label text-offwhite/70">{hero.issue}</p>
-            <span aria-hidden className="h-px flex-1 bg-line-strong" />
+            <span aria-hidden className="relative h-px flex-1 bg-line-strong">
+              <span className="absolute inset-y-0 left-0 w-16 bg-(--accent-line)" />
+            </span>
             <p className="text-label text-offwhite/45">
               <span className="max-sm:hidden">Porsche · BMW · Mercedes — </span>MMXXVI
             </p>
@@ -131,10 +138,10 @@ export function Hero() {
             <p className="text-label text-offwhite/45">В этом выпуске</p>
             <ul className="mt-4 space-y-3">
               {[bmw, mercedes].map((car) => (
-                <li key={car.id}>
+                <li key={car.id} className={`accent-${car.id}`}>
                   <a
                     href="#chapters"
-                    className="group flex items-center gap-4 border-t border-line pt-3"
+                    className="group flex items-center gap-4 border-t border-line pt-3 transition-colors duration-500 hover:border-(--accent-line)"
                   >
                     <span className="relative size-14 shrink-0 overflow-hidden">
                       <Image
@@ -148,7 +155,7 @@ export function Hero() {
                     </span>
                     <span>
                       <span className="flex items-baseline gap-2">
-                        <span className="font-serif text-[15px] text-titanium">{car.numeral}</span>
+                        <span className="font-serif text-[15px] text-(--accent)">{car.numeral}</span>
                         <span className="text-[13px] text-offwhite/80">
                           {car.brand} {car.model}
                         </span>
@@ -168,7 +175,7 @@ export function Hero() {
             delay={2.3}
             className="absolute top-[46%] left-(--gutter) hidden max-w-[220px] lg:block"
           >
-            <p className="text-label text-titanium">{hero.chapter}</p>
+            <p className="text-label text-(--accent)">{hero.chapter}</p>
             <p className="mt-3 text-[13px] leading-relaxed text-offwhite/55">{hero.model}</p>
           </Fade>
 
@@ -181,7 +188,7 @@ export function Hero() {
               <Line delay={2}>{hero.line.lead}</Line>
               <Line delay={2.12}>
                 <span className="text-serif-accent text-[1.12em] leading-[0.85]">
-                  {hero.line.accent}
+                  {hero.line.accent} <span className="text-(--accent)">{hero.line.highlight}</span>
                 </span>
               </Line>
             </h1>
@@ -202,7 +209,9 @@ export function Hero() {
             className="mt-6 flex items-center justify-between border-t border-line pt-4 lg:hidden"
           >
             <p className="text-label text-offwhite/55">{hero.model}</p>
-            <p className="text-label text-offwhite/40">I / III</p>
+            <p className="text-label text-offwhite/40">
+              <span className="text-(--accent)">I</span> / III
+            </p>
           </Fade>
         </div>
       </motion.div>

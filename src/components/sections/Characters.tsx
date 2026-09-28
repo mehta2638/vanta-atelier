@@ -67,6 +67,8 @@ function DesktopTrack() {
   const x = useTransform(g, [0, 0.1, 0.42, 0.58, 0.9, 1], ["0vw", "0vw", "-100vw", "-100vw", "-200vw", "-200vw"]);
   const [active, setActive] = useState(0);
   useMotionValueEvent(g, "change", (v) => setActive(v < 0.26 ? 0 : v < 0.74 ? 1 : 2));
+  // Цвет прогресса перетекает от главы к главе
+  const fill = useTransform(g, [0.05, 0.5, 0.95], ["#8e1f2d", "#1f4f8f", "#a8845a"]);
 
   return (
     <div ref={ref} className="relative h-[380vh] max-lg:hidden">
@@ -82,17 +84,19 @@ function DesktopTrack() {
         {/* Оглавление-прогресс */}
         <nav aria-label="Главы" className="container-x absolute inset-x-0 bottom-7 z-20">
           <div className="relative h-px bg-line-strong">
-            <motion.span style={{ scaleX: g }} className="absolute inset-0 origin-left bg-offwhite/70" />
+            <motion.span style={{ scaleX: g, backgroundColor: fill }} className="absolute inset-0 origin-left" />
           </div>
           <ol className="mt-4 grid grid-cols-3">
             {cars.map((car, i) => (
               <li
                 key={car.id}
-                className={`flex items-baseline gap-3 transition-colors duration-500 ${
+                className={`accent-${car.id} flex items-baseline gap-3 transition-colors duration-700 ${
                   i === 1 ? "justify-center" : i === 2 ? "justify-end" : ""
-                } ${active === i ? "text-offwhite" : "text-offwhite/35"}`}
+                } ${active === i ? "text-(--accent)" : "text-offwhite/35"}`}
               >
-                <span className="font-serif text-[16px] text-titanium">{car.numeral}</span>
+                <span className={`font-serif text-[16px] transition-opacity duration-700 text-(--accent) ${active === i ? "" : "opacity-50"}`}>
+                  {car.numeral}
+                </span>
                 <span className="text-label">
                   {car.brand} {car.model}
                 </span>
@@ -169,20 +173,28 @@ function ChapterHead({ index, tone = "text-offwhite/55" }: { index: number; tone
   const car = cars[index];
   return (
     <div className={`flex items-center gap-3 text-label whitespace-nowrap max-sm:text-[10px] max-sm:tracking-[0.08em] sm:gap-4 ${tone}`}>
-      <span className="text-titanium">Глава {car.numeral}</span>
+      <span className="text-(--accent)">Глава {car.numeral}</span>
       <span aria-hidden className="h-px flex-1 bg-current opacity-30" />
       <span>{car.keywords.join(" · ")}</span>
     </div>
   );
 }
 
-function Spec({ index, className = "" }: { index: number; className?: string }) {
+function Spec({
+  index,
+  className = "",
+  labelTone = "opacity-50",
+}: {
+  index: number;
+  className?: string;
+  labelTone?: string;
+}) {
   const car = cars[index];
   return (
     <dl className={`grid grid-cols-[88px_1fr] gap-y-3 border-t border-current/15 pt-4 text-[13px] ${className}`}>
-      <dt className="text-label opacity-50">Программа</dt>
+      <dt className={`text-label ${labelTone}`}>Программа</dt>
       <dd>{car.program.join(" · ")}</dd>
-      <dt className="text-label opacity-50">Фокус</dt>
+      <dt className={`text-label ${labelTone}`}>Фокус</dt>
       <dd>{car.focus}</dd>
     </dl>
   );
@@ -206,7 +218,7 @@ function ChapterPorsche({ p }: { p: MotionValue<number> }) {
   const titleY = useTransform(p, [0, 0.5, 1], ["30%", "0%", "-20%"]);
 
   return (
-    <div className="blueprint relative flex min-h-svh flex-col bg-black px-(--gutter) pt-[calc(var(--header-h)+20px)] pb-12 lg:h-full lg:pb-[104px]">
+    <div className="accent-porsche blueprint relative flex min-h-svh flex-col bg-black px-(--gutter) pt-[calc(var(--header-h)+20px)] pb-12 lg:h-full lg:pb-[104px]">
       <ChapterHead index={0} />
 
       <div className="relative mt-8 flex flex-1 flex-col lg:mt-0 lg:grid lg:grid-cols-[1fr_minmax(0,50vw)_1fr] lg:items-center lg:gap-10">
@@ -228,19 +240,28 @@ function ChapterPorsche({ p }: { p: MotionValue<number> }) {
                 style={{ objectPosition: car.images.main.position }}
                 className="grade object-cover"
               />
+              {/* Единственное цветовое пятно главы: фонарь снова красный */}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-[radial-gradient(ellipse_36%_4.5%_at_50%_47%,var(--color-porsche)_0%,transparent_100%)] opacity-80 mix-blend-color"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-[radial-gradient(ellipse_40%_9%_at_50%_47%,var(--color-porsche-glow)_0%,transparent_100%)] opacity-70 mix-blend-screen"
+              />
             </motion.div>
           </motion.figure>
 
           {/* Метки обреза и размерная линия */}
           <motion.div aria-hidden style={{ opacity: marks }} className="pointer-events-none absolute -inset-3 lg:-inset-5">
             {["top-0 left-0 border-t border-l", "top-0 right-0 border-t border-r", "bottom-0 left-0 border-b border-l", "right-0 bottom-0 border-r border-b"].map((c) => (
-              <span key={c} className={`absolute size-4 border-titanium/70 ${c}`} />
+              <span key={c} className={`absolute size-4 border-(--accent-line) ${c}`} />
             ))}
           </motion.div>
-          <motion.div aria-hidden style={{ opacity: marks }} className="absolute inset-x-0 -top-8 flex items-center gap-3 text-label text-titanium/80 max-lg:hidden">
-            <span className="h-px flex-1 bg-titanium/40" />
+          <motion.div aria-hidden style={{ opacity: marks }} className="absolute inset-x-0 -top-8 flex items-center gap-3 text-label text-(--accent) max-lg:hidden">
+            <span className="h-px flex-1 bg-(--accent-line)" />
             <span>Силуэт с 1963 года</span>
-            <span className="h-px flex-1 bg-titanium/40" />
+            <span className="h-px flex-1 bg-(--accent-line)" />
           </motion.div>
 
           {/* Выноски */}
@@ -261,7 +282,7 @@ function ChapterPorsche({ p }: { p: MotionValue<number> }) {
         style={{ y: titleY }}
         className="order-last mt-8 text-center text-display text-[clamp(56px,15vw,96px)] lg:pointer-events-none lg:absolute lg:inset-x-0 lg:bottom-[112px] lg:mt-0 lg:text-[clamp(96px,10vw,176px)]"
       >
-        {car.brand} <span className="text-serif-accent">{car.model}</span>
+        {car.brand} <span className="text-serif-accent text-(--accent)">{car.model}</span>
       </motion.h3>
     </div>
   );
@@ -290,13 +311,13 @@ function Annotation({
     >
       <span className="relative z-10 block size-2 shrink-0 rounded-full border border-offwhite bg-black" />
       <span className="relative h-px w-[clamp(24px,4vw,56px)]">
-        <motion.span style={{ width }} className={`absolute top-0 block h-px bg-offwhite/60 ${side === "left" ? "right-0" : "left-0"}`} />
+        <motion.span style={{ width }} className={`absolute top-0 block h-px bg-(--accent-line) ${side === "left" ? "right-0" : "left-0"}`} />
       </span>
       <motion.span
         style={{ opacity: progress }}
         className="px-2 text-label whitespace-nowrap text-offwhite/90 [text-shadow:0_1px_8px_rgb(0_0_0/0.9)]"
       >
-        <span className="text-titanium">0{n}</span> {label}
+        <span className="text-(--accent)">0{n}</span> {label}
       </motion.span>
     </div>
   );
@@ -314,7 +335,7 @@ function ChapterBmw({ p }: { p: MotionValue<number> }) {
   const lineScale = useTransform(p, [0.3, 0.55], [0, 1]);
 
   return (
-    <div className="relative flex min-h-svh flex-col bg-[#050505] lg:h-full">
+    <div className="accent-bmw relative flex min-h-svh flex-col bg-[#050505] lg:h-full">
       {/* Кадр: на desktop — диагональный срез, на mobile — скошенный низ */}
       <motion.div
         style={{ clipPath: clipDesktop }}
@@ -329,6 +350,11 @@ function ChapterBmw({ p }: { p: MotionValue<number> }) {
             style={{ objectPosition: car.images.main.position, filter: "grayscale(1) contrast(1.35) brightness(0.8)" }}
             className="object-cover"
           />
+          {/* Холодный отсвет фар */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-[radial-gradient(ellipse_20%_9%_at_42%_60%,var(--color-bmw)_0%,transparent_100%)] opacity-30 mix-blend-screen"
+          />
         </motion.div>
       </motion.div>
       <div className="relative h-[54svh] overflow-hidden [clip-path:polygon(0_0,100%_0,100%_74%,0_100%)] lg:hidden">
@@ -341,6 +367,11 @@ function ChapterBmw({ p }: { p: MotionValue<number> }) {
             style={{ objectPosition: car.images.main.position, filter: "grayscale(1) contrast(1.35) brightness(0.8)" }}
             className="object-cover"
           />
+          {/* Холодный отсвет фар */}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-[radial-gradient(ellipse_20%_9%_at_42%_60%,var(--color-bmw)_0%,transparent_100%)] opacity-30 mix-blend-screen"
+          />
         </motion.div>
       </div>
 
@@ -348,17 +379,17 @@ function ChapterBmw({ p }: { p: MotionValue<number> }) {
       <svg aria-hidden className="pointer-events-none absolute inset-0 size-full max-lg:hidden" preserveAspectRatio="none" viewBox="0 0 100 100">
         <motion.line
           x1="62" y1="0" x2="46" y2="100"
-          stroke="var(--color-titanium)" strokeWidth="0.12" vectorEffect="non-scaling-stroke"
+          stroke="var(--color-bmw-line)" strokeWidth="0.12" vectorEffect="non-scaling-stroke"
           style={{ pathLength: lineScale }}
         />
       </svg>
 
       {/* Линии скорости */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden max-lg:hidden">
-        {[22, 38, 71].map((top, i) => (
+        {[46, 54, 90].map((top, i) => (
           <span
             key={top}
-            className="speed-line absolute right-0 h-px w-[40vw] bg-linear-to-r from-transparent via-offwhite/40 to-transparent"
+            className="speed-line absolute right-0 h-px w-[40vw] bg-linear-to-r from-transparent via-(--accent)/45 to-transparent"
             style={{ top: `${top}%`, animationDelay: `${i * 1.3}s` }}
           />
         ))}
@@ -382,7 +413,7 @@ function ChapterBmw({ p }: { p: MotionValue<number> }) {
         </motion.p>
         <div className="mt-5 flex items-baseline justify-between gap-6 lg:mt-7">
           <h3 className="shrink-0 text-display text-[clamp(28px,3vw,48px)] whitespace-nowrap">
-            {car.brand} <span className="text-titanium">{car.model}</span>
+            {car.brand} <span className="text-(--accent)">{car.model}</span>
           </h3>
           <p className="text-serif-accent text-right text-[clamp(20px,1.8vw,28px)] text-offwhite/70">{car.motto}</p>
         </div>
@@ -402,10 +433,10 @@ function ChapterMercedes({ p }: { p: MotionValue<number> }) {
   const stripX = useTransform(p, [0, 1], ["10%", "-10%"]);
 
   return (
-    <div className="relative flex min-h-svh flex-col bg-[#12110f] text-[#ece6dc] lg:h-full">
+    <div className="accent-mercedes relative flex min-h-svh flex-col bg-[#12110f] text-[#ece6dc] lg:h-full">
       <div className="relative grid flex-1 gap-10 px-(--gutter) pt-[calc(var(--header-h)+20px)] pb-12 lg:grid-cols-[1fr_auto] lg:items-center lg:gap-[6vw] lg:pb-[104px]">
         <motion.div style={{ opacity: textOpacity }} className="order-2 lg:order-none lg:max-w-[46vw]">
-          <ChapterHead index={2} tone="text-[#ece6dc]/55" />
+          <ChapterHead index={2} tone="text-(--accent)/65" />
           <h3 className="mt-8 lg:mt-12">
             <span className="text-label block tracking-[0.4em] text-[#ece6dc]/60">
               {car.brand} — {car.model}
@@ -417,7 +448,7 @@ function ChapterMercedes({ p }: { p: MotionValue<number> }) {
           <p className="mt-6 max-w-[40ch] font-serif text-[clamp(19px,1.5vw,24px)] leading-[1.45] text-[#ece6dc]/75">
             {car.chapter}
           </p>
-          <Spec index={2} className="mt-8 max-w-[520px] text-[#ece6dc]/80" />
+          <Spec index={2} labelTone="text-(--accent-line)" className="mt-8 max-w-[520px] text-[#ece6dc]/80" />
 
           {/* Кинематографичная полоска — студийный кадр */}
           <div className="relative mt-10 aspect-[21/6] max-w-[520px] overflow-hidden max-lg:hidden">
@@ -448,9 +479,15 @@ function ChapterMercedes({ p }: { p: MotionValue<number> }) {
                   className="object-cover"
                 />
               </motion.div>
+              {/* Блик на стекле рамы и бронзовая кромка паспарту */}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-[linear-gradient(128deg,var(--color-merc)_0%,transparent_38%)] opacity-[0.12] mix-blend-soft-light"
+              />
+              <div aria-hidden className="absolute inset-0 border border-(--accent-glow)" />
             </div>
           </div>
-          <figcaption className="text-serif-accent mt-4 text-[17px] text-[#ece6dc]/55">
+          <figcaption className="text-serif-accent mt-4 text-[17px] text-(--accent)/70">
             AMG GT на набережной. Серия «{car.archetype}».
           </figcaption>
         </motion.figure>

@@ -10,7 +10,7 @@ export function SectionLabel({
 }) {
   return (
     <div className={`flex items-center gap-4 text-label text-muted ${className}`}>
-      <span className="text-titanium">{index}</span>
+      <span className="text-offwhite/80">{index}</span>
       <span aria-hidden className="h-px w-8 bg-line-strong" />
       <span>{children}</span>
     </div>

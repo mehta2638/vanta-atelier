@@ -11,8 +11,8 @@ const sizes = {
 };
 
 /**
- * Solid — off-white плашка с чёрным текстом; при hover снизу «заливается»
- * титановым цветом. Ghost — только тонкая рамка.
+ * Solid — off-white плашка с чёрным текстом; при hover снизу поднимается
+ * чуть более тёмный off-white (нейтрально, без цвета глав). Ghost — тонкая рамка.
  */
 export function Button({
   variant = "solid",
@@ -33,7 +33,7 @@ export function Button({
       {variant === "solid" && (
         <span
           aria-hidden
-          className="absolute inset-0 -z-10 translate-y-full rounded-full bg-titanium transition-transform duration-500 ease-out-expo group-hover/btn:translate-y-0"
+          className="absolute inset-0 -z-10 translate-y-full rounded-full bg-[#cfccc4] transition-transform duration-500 ease-out-expo group-hover/btn:translate-y-0"
         />
       )}
       <span>{children}</span>

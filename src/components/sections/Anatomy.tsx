@@ -15,6 +15,16 @@ import { SectionLabel } from "@/components/ui/SectionLabel";
 import { MaskLine, Reveal } from "@/components/ui/Reveal";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+/** Где на кадре горит фонарь — возвращаем ему цвет, как в главе I */
+const lampGlow: Partial<Record<Detail["id"], string>> = {
+  light: "ellipse_46%_5%_at_50%_46%",
+};
+
+const lineColor: Record<Detail["car"], string> = {
+  porsche: "#8e1f2d",
+  bmw: "#1f4f8f",
+  mercedes: "#a8845a",
+};
 const items = anatomy.items;
 const N = items.length;
 
@@ -28,6 +38,12 @@ export function Anatomy() {
   const { scrollYProgress: g } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const [active, setActive] = useState(0);
   useMotionValueEvent(g, "change", (v) => setActive(Math.min(N - 1, Math.max(0, Math.floor(v * N * 1.0001)))));
+  // Прогресс плавно меняет цвет вслед за машиной-источником детали
+  const fill = useTransform(
+    g,
+    items.map((_, i) => (i + 0.5) / N),
+    items.map((it) => lineColor[it.car]),
+  );
 
   return (
     <section id="anatomy" aria-labelledby="anatomy-title" className="relative bg-black">
@@ -65,7 +81,7 @@ export function Anatomy() {
           {/* Прогресс сверху */}
           <div className="container-x absolute inset-x-0 top-[calc(var(--header-h)+8px)]">
             <div className="relative h-px bg-line">
-              <motion.span style={{ scaleX: g }} className="absolute inset-0 origin-left bg-titanium/70" />
+              <motion.span style={{ scaleX: g, backgroundColor: fill }} className="absolute inset-0 origin-left" />
             </div>
           </div>
 
@@ -126,7 +142,7 @@ function Frame({ item, index, g }: { item: Detail; index: number; g: MotionValue
   const brackets = useTransform(r, [0.7, 1], [0, 1]);
 
   return (
-    <motion.div style={{ opacity, scale }} className={`absolute ${geometry[item.reveal]}`}>
+    <motion.div style={{ opacity, scale }} className={`accent-${item.car} absolute ${geometry[item.reveal]}`}>
       <motion.div style={{ clipPath }} className="absolute inset-0 overflow-hidden">
         <motion.div style={{ scale: imgScale }} className="absolute inset-0">
           <Image
@@ -136,6 +152,13 @@ function Frame({ item, index, g }: { item: Detail; index: number; g: MotionValue
             sizes={item.reveal === "circle" ? "(min-width: 1024px) 64vh, 80vw" : "(min-width: 1024px) 60vw, 150vw"}
             className="grade object-cover"
           />
+          {lampGlow[item.id] && (
+            <div
+              aria-hidden
+              style={{ backgroundImage: `radial-gradient(${lampGlow[item.id]!.replaceAll("_", " ")}, var(--color-porsche) 0%, transparent 100%)` }}
+              className="absolute inset-0 opacity-75 mix-blend-color"
+            />
+          )}
         </motion.div>
       </motion.div>
 
@@ -143,13 +166,13 @@ function Frame({ item, index, g }: { item: Detail; index: number; g: MotionValue
       {item.reveal !== "circle" && item.reveal !== "rise" && (
         <motion.div aria-hidden style={{ opacity: brackets }} className="pointer-events-none absolute -inset-2.5 max-lg:hidden">
           {["top-0 left-0 border-t border-l", "top-0 right-0 border-t border-r", "bottom-0 left-0 border-b border-l", "right-0 bottom-0 border-r border-b"].map((c) => (
-            <span key={c} className={`absolute size-5 border-titanium/60 ${c}`} />
+            <span key={c} className={`absolute size-5 border-(--accent-line) ${c}`} />
           ))}
         </motion.div>
       )}
       {item.reveal === "circle" && (
         <motion.svg aria-hidden style={{ opacity: brackets }} viewBox="0 0 100 100" className="pointer-events-none absolute -inset-4 size-[calc(100%+2rem)]">
-          <circle cx="50" cy="50" r="49.5" fill="none" stroke="var(--color-titanium)" strokeOpacity="0.5" strokeWidth="0.2" strokeDasharray="0.6 1.4" vectorEffect="non-scaling-stroke" />
+          <circle cx="50" cy="50" r="49.5" fill="none" stroke="var(--accent-line)" strokeOpacity="0.9" strokeWidth="0.2" strokeDasharray="0.6 1.4" vectorEffect="non-scaling-stroke" />
         </motion.svg>
       )}
     </motion.div>
@@ -169,10 +192,10 @@ function Caption({ item, index }: { item: Detail; index: number }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.55, ease }}
-          className="max-w-[460px]"
+          className={`accent-${item.car} max-w-[460px]`}
         >
           <div className="flex items-baseline gap-3">
-            <span className="font-serif text-[clamp(44px,5vw,72px)] leading-none text-titanium">
+            <span className="font-serif text-[clamp(44px,5vw,72px)] leading-none text-(--accent)">
               0{index + 1}
             </span>
             <span className="text-label text-subtle">/ 0{N}</span>
@@ -183,7 +206,7 @@ function Caption({ item, index }: { item: Detail; index: number }) {
             <span className="text-serif-accent text-[clamp(20px,1.8vw,28px)] whitespace-nowrap text-offwhite/50">{item.en}</span>
           </h3>
           <p className="mt-4 text-[15px] leading-[1.6] text-offwhite/70">{item.text}</p>
-          <p className="text-label mt-5 border-t border-line pt-4 text-titanium/80">{item.note}</p>
+          <p className="text-label mt-5 border-t border-(--accent-line)/60 pt-4 text-(--accent)">{item.note}</p>
         </motion.div>
       </AnimatePresence>
     </div>
@@ -197,7 +220,7 @@ function Index({ active }: { active: number }) {
       {items.map((item, i) => (
         <li
           key={item.id}
-          className={`flex items-center justify-end gap-3 text-label transition-colors duration-500 ${
+          className={`accent-${item.car} flex items-center justify-end gap-3 text-label transition-colors duration-500 ${
             i === active ? "text-offwhite" : "text-offwhite/30"
           }`}
         >
@@ -205,7 +228,7 @@ function Index({ active }: { active: number }) {
           <span
             aria-hidden
             className={`h-px transition-all duration-500 ease-out-expo ${
-              i === active ? "w-10 bg-titanium" : "w-4 bg-current"
+              i === active ? "w-10 bg-(--accent)" : "w-4 bg-current"
             }`}
           />
         </li>

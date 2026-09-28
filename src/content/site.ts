@@ -22,7 +22,7 @@ export const hero = {
   chapter: "Глава I — Точность",
   cover: "911",
   model: "Porsche 911 GT3 RS",
-  line: { lead: "Точность,", accent: "доведённая до блеска." },
+  line: { lead: "Точность,", accent: "доведённая до", highlight: "блеска." },
   lead: "Частное ателье детейлинга для трёх характеров: Porsche 911, BMW M и Mercedes-AMG.",
   cta: { label: "Записаться в ателье", href: "#contact" },
 };
@@ -99,6 +99,8 @@ export type Detail = {
   title: string;
   en: string;
   source: string;
+  /** Машина-источник: определяет цвет акцента детали */
+  car: Car["id"];
   text: string;
   note: string;
   image: Media;
@@ -116,6 +118,7 @@ export const anatomy = {
       title: "Фара",
       en: "Headlight",
       source: "BMW M4",
+      car: "bmw",
       text: "Поликарбонат мутнеет от ультрафиолета и песка. Полируем оптику и закрываем плёнкой — свет снова режет темноту.",
       note: "Оптика · полировка + PPF",
       image: details.headlight,
@@ -126,6 +129,7 @@ export const anatomy = {
       title: "Кузов",
       en: "Body line",
       source: "Mercedes CLS",
+      car: "mercedes",
       text: "Линия плеча — место, где видна каждая волна лака. Коррекция идёт по свету, а не по таймеру.",
       note: "Лак · многоэтапная коррекция",
       image: details.body,
@@ -136,6 +140,7 @@ export const anatomy = {
       title: "Колесо",
       en: "Wheel",
       source: "Mercedes CLS",
+      car: "mercedes",
       text: "Тормозная пыль въедается в лак дисков. Снимаем колёса, чистим изнутри и защищаем керамикой.",
       note: "Диски · деконтаминация + керамика",
       image: details.wheel,
@@ -146,6 +151,7 @@ export const anatomy = {
       title: "Салон",
       en: "Interior",
       source: "Mercedes-AMG",
+      car: "mercedes",
       text: "Кожа Nappa не терпит агрессивной химии. Только pH-нейтральные составы, мягкие щётки и терпение.",
       note: "Кожа · очистка + защита",
       image: details.interior,
@@ -156,6 +162,7 @@ export const anatomy = {
       title: "Отражение",
       en: "Reflection",
       source: "Porsche 911 Turbo S",
+      car: "porsche",
       text: "Отражение — главный инструмент контроля. Если полоса света ломается на панели, работа не закончена.",
       note: "Контроль · инспекционный свет",
       image: details.light,
@@ -166,6 +173,7 @@ export const anatomy = {
       title: "Покрытие",
       en: "Coating",
       source: "Porsche 911 Turbo S",
+      car: "porsche",
       text: "Керамика превращает воду в капли, а грязь — в гостя. Слой в пару микрон, который видно с первого дождя.",
       note: "ЛКП · керамическое покрытие",
       image: details.paint,
