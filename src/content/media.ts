@@ -17,6 +17,7 @@ import type { StaticImageData } from "next/image";
 
 import porscheCover from "@/assets/media/porsche-cover.jpg";
 import porscheCoverCut from "@/assets/media/porsche-cover-cut.webp";
+import porscheStudio from "@/assets/media/porsche-studio.webp";
 import porscheRear from "@/assets/media/porsche-rear.jpg";
 import porscheSide from "@/assets/media/porsche-side.jpg";
 import bmwFront from "@/assets/media/bmw-front.jpg";
@@ -217,3 +218,15 @@ export const serviceMedia = {
     credit: "unsplash 1695270939393",
   },
 } satisfies Record<string, Media>;
+
+/**
+ * Porsche 911 GT3 RS без фона, кадр по машине (2208×1200, ≈1.84:1).
+ * Вырезан из того же кадра, что и обложка. Используется в «Протоколе»
+ * (координаты меток — в % от этого кадра) и в финальной сцене.
+ * При замене сохраните пропорции, иначе метки «Протокола» съедут.
+ */
+export const studioCar = {
+  src: porscheStudio,
+  alt: "Чёрный Porsche 911 GT3 RS в тёмной студии",
+  credit: "unsplash 1580274455191, вырезка",
+};

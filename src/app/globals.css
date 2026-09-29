@@ -271,3 +271,48 @@ html.lenis body {
     opacity: 0;
   }
 }
+
+/* ─────────────────────────────────────────────
+   06 — Протокол
+   ───────────────────────────────────────────── */
+/* Свет, ограниченный силуэтом автомобиля (маска = PNG/WebP с альфой) */
+.car-mask {
+  mask-size: 100% 100%;
+  -webkit-mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+}
+.scan-band {
+  animation: scan 3.2s var(--ease-in-out-quart) infinite;
+}
+@keyframes scan {
+  from {
+    left: -16%;
+  }
+  to {
+    left: 100%;
+  }
+}
+.sweep-band {
+  animation: scan 2.6s var(--ease-in-out-quart) 0.3s infinite;
+}
+.ping-ring {
+  animation: ping-ring 2.4s ease-out infinite;
+}
+@keyframes ping-ring {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+/* 07 — финальная сцена: отражение автомобиля в полу студии */
+.floor-reflection {
+  transform: scaleY(-1);
+  mask-image: linear-gradient(to top, rgb(0 0 0 / 0.35), transparent 42%);
+  -webkit-mask-image: linear-gradient(to top, rgb(0 0 0 / 0.35), transparent 42%);
+}
