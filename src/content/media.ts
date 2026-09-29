@@ -30,6 +30,11 @@ import detailWheel from "@/assets/media/detail-wheel.jpg";
 import detailInterior from "@/assets/media/detail-interior.jpg";
 import detailLight from "@/assets/media/detail-light.jpg";
 import detailPaint from "@/assets/media/detail-paint.jpg";
+import trAfterWide from "@/assets/media/transformation-after-wide.jpg";
+import trBeforeWide from "@/assets/media/transformation-before-wide.jpg";
+import trAfterTall from "@/assets/media/transformation-after-tall.jpg";
+import trBeforeTall from "@/assets/media/transformation-before-tall.jpg";
+import trSwirls from "@/assets/media/transformation-swirls.webp";
 
 export type Media = {
   src: StaticImageData;
@@ -132,3 +137,24 @@ export const details = {
     credit: "unsplash 1611651338412, кроп",
   },
 } satisfies Record<string, Media>;
+
+/**
+ * Сцена «Трансформация» (тест 50/50).
+ * after — исходный кадр; before смоделирован из него же (скрипт генерации:
+ * пониженный контраст, мутные отражения, пыль и пятна). Монохром запечён в файлы.
+ * При замене: пары before/after должны совпадать пиксель в пиксель.
+ * wide — для landscape, tall — для portrait.
+ */
+export const transformationMedia = {
+  wide: {
+    after: { src: trAfterWide, alt: "Чёрный Porsche 911 GT3 Touring после коррекции лака" },
+    before: { src: trBeforeWide, alt: "" },
+  },
+  tall: {
+    after: { src: trAfterTall, alt: "Чёрный Porsche 911 GT3 Touring после коррекции лака" },
+    before: { src: trBeforeTall, alt: "" },
+  },
+  /** Паутина царапин вокруг точечного источника света */
+  swirls: trSwirls,
+  credit: "unsplash 1611821064430",
+};

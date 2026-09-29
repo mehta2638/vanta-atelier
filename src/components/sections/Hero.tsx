@@ -79,9 +79,9 @@ export function Hero() {
         <motion.div style={{ y: numY, x: smx }} className="absolute inset-x-0 bottom-[57.5%]">
           <motion.p
             aria-hidden
-            initial={reduce ? false : { y: "45%", opacity: 0 }}
+            initial={{ y: "45%", opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1.8, delay: 1.1, ease }}
+            transition={reduce ? { duration: 0 } : { duration: 1.8, delay: 1.1, ease }}
             className="text-center font-display text-[calc(var(--w)*0.33)] leading-[0.72] font-semibold tracking-[-0.07em] text-offwhite"
           >
             {hero.cover}

@@ -15,6 +15,7 @@ export const site = {
 export const nav = [
   { label: "Главы", href: "#chapters" },
   { label: "Анатомия", href: "#anatomy" },
+  { label: "Трансформация", href: "#transformation" },
 ];
 
 export const hero = {
@@ -180,4 +181,18 @@ export const anatomy = {
       reveal: "rise",
     },
   ] satisfies Detail[],
+};
+
+export const transformation = {
+  label: "Трансформация",
+  car: "Porsche 911 GT3 Touring",
+  title: { lead: "Свет", accent: "не врёт." },
+  lead: "Тест 50/50 — так детейлеры проверяют работу. Лента делит панель: слева лак как есть, справа — после коррекции. Под точечной лампой разницу не спрятать.",
+  hint: { mouse: "Проведите лампой по кузову", touch: "Перетащите лампу" },
+  sides: { before: "До коррекции", after: "После" },
+  tape: "VANTA · ТЕСТ 50/50 · ",
+  peel: "Снять ленту",
+  reset: "Вернуть ленту",
+  done: "Коррекция в два этапа · керамика",
+  disclaimer: "Визуализация: состояние «до» смоделировано",
 };
