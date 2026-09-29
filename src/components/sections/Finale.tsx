@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useId, useRef, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import { finale, site } from "@/content/site";
@@ -35,7 +35,7 @@ export function Finale() {
         <div className="flex items-center gap-4">
           <SectionLabel index="07">{finale.label}</SectionLabel>
           <span aria-hidden className="h-px flex-1 bg-line" />
-          <p className="text-label text-offwhite/40 max-sm:hidden">Porsche 911 GT3 RS</p>
+          <p className="text-label text-offwhite/55 max-sm:hidden">Porsche 911 GT3 RS</p>
         </div>
 
         <h2 id="finale-title" className="relative z-10 mt-8 text-display text-[clamp(46px,12.5vw,80px)] lg:mt-10 lg:text-[clamp(80px,8.4vw,156px)]">
@@ -91,9 +91,26 @@ export function Finale() {
 /* ─────────────────────────────────────────────
    Демо-форма
    ───────────────────────────────────────────── */
+type FieldName = "name" | "phone";
+type Errors = Partial<Record<FieldName, string>>;
+
+/** Проверка на стороне клиента (форма демо — ничего не отправляет) */
+function validate(field: FieldName, value: string): string | undefined {
+  const v = value.trim();
+  if (field === "name") return v ? undefined : finale.errors.name;
+  if (!v) return finale.errors.phoneEmpty;
+  return v.replace(/D/g, "").length < 10 ? finale.errors.phoneShort : undefined;
+}
+
 function DemoForm() {
   const [sent, setSent] = useState(false);
   const [car, setCar] = useState(finale.carOptions[0]);
+  const [errors, setErrors] = useState<Errors>({});
+  const nameRef = useRef<HTMLInputElement>(null);
+  const phoneRef = useRef<HTMLInputElement>(null);
+
+  const check = (field: FieldName, value: string) =>
+    setErrors((e) => ({ ...e, [field]: validate(field, value) }));
 
   return (
     <div className="mt-8">
@@ -112,7 +129,10 @@ function DemoForm() {
             <p className="mt-2 text-[14px] text-offwhite/55">{finale.success.text}</p>
             <button
               type="button"
-              onClick={() => setSent(false)}
+              onClick={() => {
+                setErrors({});
+                setSent(false);
+              }}
               className="text-label mt-5 self-start text-offwhite/50 underline-offset-4 transition-colors hover:text-offwhite hover:underline"
             >
               {finale.success.again}
@@ -124,19 +144,44 @@ function DemoForm() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            noValidate
             onSubmit={(e) => {
               e.preventDefault();
-              setSent(true);
+              const next: Errors = {
+                name: validate("name", nameRef.current?.value ?? ""),
+                phone: validate("phone", phoneRef.current?.value ?? ""),
+              };
+              setErrors(next);
+              // Фокус — на первое поле с ошибкой; текст ошибки прочитается через aria-describedby
+              const first = (["name", "phone"] as const).find((k) => next[k]);
+              if (first) (first === "name" ? nameRef : phoneRef).current?.focus();
+              else setSent(true);
             }}
             className="space-y-6"
           >
             <div className="grid gap-6 sm:grid-cols-2">
-              <Field name="name" label={finale.fields.name} autoComplete="name" />
-              <Field name="phone" label={finale.fields.phone} type="tel" autoComplete="tel" inputMode="tel" pattern="[0-9+()\\-\\s]{6,}" />
+              <Field
+                ref={nameRef}
+                name="name"
+                label={finale.fields.name}
+                autoComplete="name"
+                error={errors.name}
+                onValidate={check}
+              />
+              <Field
+                ref={phoneRef}
+                name="phone"
+                label={finale.fields.phone}
+                type="tel"
+                autoComplete="tel"
+                inputMode="tel"
+                error={errors.phone}
+                onValidate={check}
+              />
             </div>
 
             <fieldset>
-              <legend className="text-label text-offwhite/40">{finale.fields.car}</legend>
+              <legend className="text-label text-offwhite/55">{finale.fields.car}</legend>
               <div className="mt-3 flex flex-wrap gap-2">
                 {finale.carOptions.map((c) => (
                   <label
@@ -164,7 +209,7 @@ function DemoForm() {
                 {finale.cta}
                 <Arrow />
               </button>
-              <p className="max-w-[34ch] text-[12px] leading-[1.5] text-offwhite/40">{finale.note}</p>
+              <p className="max-w-[34ch] text-[12px] leading-[1.5] text-offwhite/55">{finale.note}</p>
             </div>
           </motion.form>
         )}
@@ -173,17 +218,56 @@ function DemoForm() {
   );
 }
 
-function Field({ name, label, ...rest }: { name: string; label: string } & React.InputHTMLAttributes<HTMLInputElement>) {
+function Field({
+  name,
+  label,
+  error,
+  onValidate,
+  ref,
+  ...rest
+}: {
+  name: FieldName;
+  label: string;
+  error?: string;
+  onValidate: (field: FieldName, value: string) => void;
+  ref: React.Ref<HTMLInputElement>;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "name">) {
+  const errorId = `${useId()}-error`;
   return (
-    <label className="group block">
-      <span className="text-label text-offwhite/40 transition-colors group-focus-within:text-offwhite/70">{label}</span>
-      <input
-        name={name}
-        required
-        {...rest}
-        className="mt-2 block w-full border-b border-line-strong bg-transparent pb-3 text-[17px] text-offwhite outline-none transition-colors placeholder:text-offwhite/20 focus:border-offwhite/70"
-      />
-    </label>
+    <div>
+      <label className="group block">
+        <span className="text-label flex items-baseline gap-2 text-offwhite/55 transition-colors group-focus-within:text-offwhite/80">
+          {label}
+          <span aria-hidden className="text-offwhite/55">
+            *
+          </span>
+          <span className="sr-only">({finale.required})</span>
+        </span>
+        <input
+          ref={ref}
+          name={name}
+          required
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          // Проверяем по уходу с поля; после ошибки — сразу при исправлении
+          onBlur={(e) => onValidate(name, e.currentTarget.value)}
+          onChange={(e) => error && onValidate(name, e.currentTarget.value)}
+          {...rest}
+          className={`mt-2 block w-full border-b bg-transparent pb-3 text-[17px] text-offwhite outline-none transition-colors ${
+            error ? "border-(--accent) focus:border-(--accent)" : "border-line-strong focus:border-offwhite/70"
+          }`}
+        />
+      </label>
+      {/* Ошибка — текстом под полем, не только цветом */}
+      <p id={errorId} className="mt-2 min-h-[1lh] text-[13px] leading-[1.5] text-(--accent)">
+        {error && (
+          <>
+            <span className="text-label mr-2">Ошибка —</span>{" "}
+            {error}
+          </>
+        )}
+      </p>
+    </div>
   );
 }
 
@@ -203,16 +287,16 @@ function Contacts({ className = "" }: { className?: string }) {
   ];
   return (
     <div className={className}>
-      <p className="text-label text-offwhite/40">{finale.contactsLabel}</p>
+      <p className="text-label text-offwhite/55">{finale.contactsLabel}</p>
       <dl className="mt-3 border-t border-line">
         {rows.map(([k, v]) => (
           <div key={k} className="flex items-baseline justify-between gap-6 border-b border-line py-3.5">
-            <dt className="text-label text-offwhite/35">{k}</dt>
+            <dt className="text-label text-offwhite/55">{k}</dt>
             <dd className="text-right font-mono text-[13px] text-offwhite/85">{v}</dd>
           </div>
         ))}
       </dl>
-      <p className="mt-5 text-[11px] leading-[1.5] text-offwhite/30">{finale.demo}</p>
+      <p className="mt-5 text-[11px] leading-[1.5] text-offwhite/55">{finale.demo}</p>
     </div>
   );
 }

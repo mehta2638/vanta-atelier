@@ -114,7 +114,7 @@ function StickyFrame({ current }: { current: number }) {
                 <span className="text-serif-accent text-[26px] text-offwhite/70">{item.en}</span>
               </motion.p>
             </AnimatePresence>
-            <p className="text-label text-offwhite/45">/ 0{items.length}</p>
+            <p className="text-label text-offwhite/55">/ 0{items.length}</p>
           </div>
         </div>
       </div>
@@ -172,7 +172,7 @@ function Row({
             >
               {item.title}
             </span>
-            <span className="text-serif-accent text-[18px] text-offwhite/40 max-sm:hidden lg:text-[22px]">
+            <span className="text-serif-accent text-[18px] text-offwhite/55 max-sm:hidden lg:text-[22px]">
               {item.en}
             </span>
           </h3>
@@ -187,7 +187,7 @@ function Row({
 
           <div className="mt-5 flex flex-wrap items-center gap-x-8 gap-y-3 font-mono text-[12px]">
             <span className="text-offwhite/85">{item.price}</span>
-            <span className="text-offwhite/45">{item.duration}</span>
+            <span className="text-offwhite/55">{item.duration}</span>
             <Chapters ids={item.chapters} />
           </div>
         </div>
@@ -208,25 +208,27 @@ function Row({
   );
 }
 
-/** Метки глав I · II · III: включённые — в цвете своей машины */
+/**
+ * Главы, в программу которых входит услуга: номер в цвете машины + короткое имя.
+ * Не входящие главы не показываются — смысл передаётся текстом, а не цветом.
+ */
 function Chapters({ ids }: { ids: Service["chapters"] }) {
+  const included = cars.filter((car) => ids.includes(car.id));
   return (
-    <span className="flex items-center gap-3" aria-label={`${services.chaptersLabel}: ${ids.length}`}>
-      <span className="text-label text-[10px] text-offwhite/30 max-sm:hidden">{services.chaptersLabel}</span>
-      {cars.map((car) => {
-        const on = ids.includes(car.id);
-        return (
-          <span
-            key={car.id}
-            title={`${car.brand} ${car.model}`}
-            className={`accent-${car.id} font-serif text-[16px] leading-none ${
-              on ? "text-(--accent)" : "text-offwhite/15"
-            }`}
-          >
+    <span className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+      <span className="text-label text-offwhite/55 max-sm:hidden">{services.chaptersLabel}</span>
+      <span className="sr-only sm:hidden">{services.chaptersLabel}:</span>
+      {included.map((car, i) => (
+        <span key={car.id} className={`accent-${car.id} flex items-baseline gap-1.5`}>
+          <span aria-hidden className="font-serif text-[16px] leading-none text-(--accent)">
             {car.numeral}
           </span>
-        );
-      })}
+          <span className="text-label text-offwhite/70">
+            {car.brand}
+            {i < included.length - 1 && <span className="sr-only">,</span>}
+          </span>
+        </span>
+      ))}
     </span>
   );
 }

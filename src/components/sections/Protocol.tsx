@@ -35,14 +35,14 @@ export function Protocol() {
         {protocol.label}: {protocol.title.lead} {protocol.title.accent}
       </h2>
 
-      <div ref={ref} style={{ height: `${N * 100 + 40}svh` }} className="relative">
+      <div ref={ref} style={{ height: `${N * 75 + 30}svh` }} className="relative">
         <div className="sticky top-0 flex h-svh flex-col overflow-hidden pt-[calc(var(--header-h)+12px)] pb-[max(18px,env(safe-area-inset-bottom))] lg:pb-8">
           {/* Шапка листа */}
           <div className="container-x flex items-center gap-4">
             <SectionLabel index="06">{protocol.label}</SectionLabel>
             <span aria-hidden className="h-px flex-1 bg-line" />
-            <p className="text-label text-offwhite/40 max-md:hidden">{protocol.doc}</p>
-            <p className="text-label text-offwhite/60 tabular-nums">
+            <p className="text-label text-offwhite/55 max-md:hidden">{protocol.doc}</p>
+            <p aria-hidden className="text-label text-offwhite/60 tabular-nums">
               Лист {stage.n} / 0{N}
             </p>
           </div>
@@ -54,6 +54,26 @@ export function Protocol() {
           </div>
 
           <Timeline active={active} progress={p} />
+
+          {/* Весь протокол для скринридера: визуально этапы сменяются по скроллу */}
+          <ol className="sr-only">
+            {stages.map((st) => (
+              <li key={st.n}>
+                <h3>
+                  {st.n}. {st.title}
+                </h3>
+                <p>{st.text}</p>
+                <dl>
+                  {st.specs.map(([k, v]) => (
+                    <div key={k}>
+                      <dt>{k}</dt>
+                      <dd>{v}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </li>
+            ))}
+          </ol>
         </div>
       </div>
     </section>
@@ -63,7 +83,7 @@ export function Protocol() {
 /* Номер, название, текст, параметры */
 function Copy({ stage, className = "" }: { stage: ProtocolStage; className?: string }) {
   return (
-    <div className={`relative ${className}`}>
+    <div aria-hidden className={`relative ${className}`}>
       <div className="flex items-end gap-5 lg:block">
         {/* Огромный номер — «перелистывается» */}
         <div className="relative shrink-0 overflow-hidden leading-none">
@@ -92,7 +112,7 @@ function Copy({ stage, className = "" }: { stage: ProtocolStage; className?: str
           >
             <h3 className="flex flex-wrap items-baseline gap-x-4">
               <span className="text-display text-[clamp(34px,9vw,44px)] lg:text-[clamp(40px,3.6vw,60px)]">{stage.title}</span>
-              <span className="text-serif-accent text-[20px] text-offwhite/45 lg:text-[26px]">{stage.en}</span>
+              <span className="text-serif-accent text-[20px] text-offwhite/55 lg:text-[26px]">{stage.en}</span>
             </h3>
           </motion.div>
         </AnimatePresence>
@@ -110,7 +130,7 @@ function Copy({ stage, className = "" }: { stage: ProtocolStage; className?: str
           <dl className="mt-5 max-w-[440px] border-t border-line max-[360px]:hidden lg:mt-8">
             {stage.specs.map(([k, v]) => (
               <div key={k} className="grid grid-cols-[110px_1fr] gap-4 border-b border-line py-2.5">
-                <dt className="text-label text-offwhite/35">{k}</dt>
+                <dt className="text-label text-offwhite/55">{k}</dt>
                 <dd className="font-mono text-[12px] text-offwhite/80">{v}</dd>
               </div>
             ))}
@@ -199,7 +219,7 @@ function Mark({ mark, kind, i }: { mark: ProtocolMark; kind: number; i: number }
         className={`h-px w-[clamp(18px,3vw,44px)] bg-offwhite/50 ${left ? "origin-right" : "origin-left"}`}
       />
       <span className={`px-2 whitespace-nowrap [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${left ? "text-right" : ""}`}>
-        <span className="text-label block text-[9px] text-offwhite/60 sm:text-[10px]">{mark.label}</span>
+        <span className="text-label block text-offwhite/70">{mark.label}</span>
         {mark.value && <span className="block font-mono text-[11px] text-offwhite sm:text-[13px]">{mark.value}</span>}
       </span>
     </motion.div>
@@ -214,7 +234,7 @@ function Approved() {
       transition={{ duration: 0.7, delay: 0.5, ease }}
       className="absolute top-[4%] right-[2%] border border-offwhite/40 px-3 py-2 text-right"
     >
-      <p className="text-label text-[9px] text-offwhite/50">Контроль</p>
+      <p className="text-label text-offwhite/55">Контроль</p>
       <p className="font-mono text-[12px] text-offwhite">Пройден · 04/04</p>
     </motion.div>
   );
@@ -223,7 +243,7 @@ function Approved() {
 /* Шкала этапов */
 function Timeline({ active, progress }: { active: number; progress: MotionValue<number> }) {
   return (
-    <div className="container-x mt-4 lg:mt-6">
+    <div aria-hidden className="container-x mt-4 lg:mt-6">
       <div className="relative h-px bg-line-strong">
         <motion.span style={{ scaleX: progress }} className="absolute inset-0 origin-left bg-offwhite/70" />
         {stages.map((s, i) => (
@@ -241,7 +261,7 @@ function Timeline({ active, progress }: { active: number; progress: MotionValue<
         {stages.map((s, i) => (
           <li
             key={s.n}
-            className={`flex items-baseline gap-2 transition-colors duration-500 ${i === active ? "text-offwhite" : "text-offwhite/35"}`}
+            className={`flex items-baseline gap-2 transition-colors duration-500 ${i === active ? "text-offwhite" : "text-offwhite/55"}`}
           >
             <span className="font-mono text-[11px]">{s.n}</span>
             <span className="text-label max-sm:hidden">{s.title}</span>

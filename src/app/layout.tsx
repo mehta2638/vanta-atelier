@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Inter, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { MotionProvider } from "@/components/layout/MotionProvider";
 import "./globals.css";
 
 const interTight = Inter_Tight({
@@ -49,7 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body>
         <SmoothScroll />
-        {children}
+        <MotionProvider>{children}</MotionProvider>
       </body>
     </html>
   );

@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import { cars, chapters } from "@/content/site";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useParallax } from "@/components/layout/MotionProvider";
 import { MaskLine, Reveal } from "@/components/ui/Reveal";
 
 /**
@@ -42,7 +43,7 @@ function Intro() {
           <h2 id="chapters-title" className="mt-8 text-display text-[clamp(44px,6.6vw,112px)] md:mt-10">
             <MaskLine>{chapters.title[0]}</MaskLine>
             <MaskLine delay={0.08}>
-              <span className="text-offwhite/35">со </span>
+              <span className="text-offwhite/40">со </span>
               <span className="text-serif-accent text-[1.12em] text-offwhite">всеми.</span>
             </MaskLine>
           </h2>
@@ -92,7 +93,7 @@ function DesktopTrack() {
                 key={car.id}
                 className={`accent-${car.id} flex items-baseline gap-3 transition-colors duration-700 ${
                   i === 1 ? "justify-center" : i === 2 ? "justify-end" : ""
-                } ${active === i ? "text-(--accent)" : "text-offwhite/35"}`}
+                } ${active === i ? "text-(--accent)" : "text-offwhite/55"}`}
               >
                 <span className={`font-serif text-[16px] transition-opacity duration-700 text-(--accent) ${active === i ? "" : "opacity-50"}`}>
                   {car.numeral}
@@ -172,7 +173,7 @@ function MobileSlot({ children }: { children: (p: MotionValue<number>) => React.
 function ChapterHead({ index, tone = "text-offwhite/55" }: { index: number; tone?: string }) {
   const car = cars[index];
   return (
-    <div className={`flex items-center gap-3 text-label whitespace-nowrap max-sm:text-[10px] max-sm:tracking-[0.08em] sm:gap-4 ${tone}`}>
+    <div className={`flex items-center gap-3 text-label whitespace-nowrap max-sm:tracking-[0.06em] sm:gap-4 ${tone}`}>
       <span className="text-(--accent)">Глава {car.numeral}</span>
       <span aria-hidden className="h-px flex-1 bg-current opacity-30" />
       <span>{car.keywords.join(" · ")}</span>
@@ -213,9 +214,9 @@ function ChapterPorsche({ p }: { p: MotionValue<number> }) {
   const car = cars[0];
   const reveal = useTransform(p, [0.18, 0.42], [0, 1]);
   const clipPath = useTransform(reveal, (v) => `inset(${(1 - v) * 50}% 0 ${(1 - v) * 50}% 0)`);
-  const imgScale = useTransform(p, [0.2, 0.5, 1], [1.2, 1.04, 1]);
+  const imgScale = useTransform(p, [0.2, 0.5, 1], useParallax([1.2, 1.04, 1], 1.04));
   const marks = useTransform(p, [0.36, 0.48], [0, 1]);
-  const titleY = useTransform(p, [0, 0.5, 1], ["30%", "0%", "-20%"]);
+  const titleY = useTransform(p, [0, 0.5, 1], useParallax(["30%", "0%", "-20%"], "0%"));
 
   return (
     <div className="accent-porsche blueprint relative flex min-h-svh flex-col bg-black px-(--gutter) pt-[calc(var(--header-h)+20px)] pb-12 lg:h-full lg:pb-[104px]">
@@ -330,8 +331,8 @@ function ChapterBmw({ p }: { p: MotionValue<number> }) {
   const car = cars[1];
   const open = useTransform(p, [0.15, 0.45], [0, 1]);
   const clipDesktop = useTransform(open, (v) => `polygon(0 0, ${62 * v}% 0, ${46 * v}% 100%, 0 100%)`);
-  const imgX = useTransform(p, [0, 1], ["8%", "-8%"]);
-  const wordX = useTransform(p, [0, 0.5, 1], ["22%", "0%", "-14%"]);
+  const imgX = useTransform(p, [0, 1], useParallax(["8%", "-8%"], "0%"));
+  const wordX = useTransform(p, [0, 0.5, 1], useParallax(["22%", "0%", "-14%"], "0%"));
   const lineScale = useTransform(p, [0.3, 0.55], [0, 1]);
 
   return (
@@ -427,10 +428,10 @@ function ChapterBmw({ p }: { p: MotionValue<number> }) {
    ───────────────────────────────────────────── */
 function ChapterMercedes({ p }: { p: MotionValue<number> }) {
   const car = cars[2];
-  const printY = useTransform(p, [0, 0.5, 1], ["14%", "0%", "-6%"]);
-  const imgScale = useTransform(p, [0, 0.5], [1.18, 1]);
+  const printY = useTransform(p, [0, 0.5, 1], useParallax(["14%", "0%", "-6%"], "0%"));
+  const imgScale = useTransform(p, [0, 0.5], useParallax([1.18, 1], 1));
   const textOpacity = useTransform(p, [0.25, 0.45], [0, 1]);
-  const stripX = useTransform(p, [0, 1], ["10%", "-10%"]);
+  const stripX = useTransform(p, [0, 1], useParallax(["10%", "-10%"], "0%"));
 
   return (
     <div className="accent-mercedes relative flex min-h-svh flex-col bg-[#12110f] text-[#ece6dc] lg:h-full">

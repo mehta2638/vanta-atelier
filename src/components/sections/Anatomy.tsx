@@ -12,6 +12,7 @@ import {
 } from "motion/react";
 import { anatomy, type Detail } from "@/content/site";
 import { SectionLabel } from "@/components/ui/SectionLabel";
+import { useParallax } from "@/components/layout/MotionProvider";
 import { MaskLine, Reveal } from "@/components/ui/Reveal";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -52,7 +53,7 @@ export function Anatomy() {
             <h2 id="anatomy-title" className="mt-8 text-display text-[clamp(44px,6.6vw,112px)] md:mt-10">
               <MaskLine>{anatomy.title[0]}</MaskLine>
               <MaskLine delay={0.08}>
-                <span className="text-offwhite/35">в </span>
+                <span className="text-offwhite/40">в </span>
                 <span className="text-serif-accent text-[1.12em] text-offwhite">деталях.</span>
               </MaskLine>
             </h2>
@@ -63,7 +64,7 @@ export function Anatomy() {
         </div>
       </div>
 
-      <div ref={ref} style={{ height: `${N * 90 + 100}svh` }} className="relative">
+      <div ref={ref} style={{ height: `${N * 65 + 60}svh` }} className="relative">
         <div className="sticky top-0 h-svh overflow-hidden">
           {/* Кадры */}
           {items.map((item, i) => (
@@ -86,6 +87,19 @@ export function Anatomy() {
           <Caption item={items[active]} index={active} />
           <Index active={active} />
         </div>
+
+        {/* Весь текст сцены для скринридера: визуально пункты сменяются по скроллу */}
+        <ol className="sr-only">
+          {items.map((it) => (
+            <li key={it.id}>
+              <h3>
+                {it.title} ({it.en}), {it.source}
+              </h3>
+              <p>{it.text}</p>
+              <p>{it.note}</p>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );
@@ -134,9 +148,9 @@ function Frame({ item, index, g }: { item: Detail; index: number; g: MotionValue
   // Уход — когда проявляется следующий кадр
   const next = useTransform(g, [start + seg, start + seg * 1.55], [0, 1], { clamp: true });
   const clipPath = useTransform(r, (v) => clipFor(item.reveal, v));
-  const imgScale = useTransform(r, [0, 1], [1.35, 1]);
+  const imgScale = useTransform(r, [0, 1], useParallax([1.35, 1], 1));
   const opacity = useTransform(next, [0, 1], [1, index === N - 1 ? 1 : 0]);
-  const scale = useTransform(next, [0, 1], [1, 0.94]);
+  const scale = useTransform(next, [0, 1], useParallax([1, 0.94], 1));
   const brackets = useTransform(r, [0.7, 1], [0, 1]);
 
   return (
@@ -183,7 +197,7 @@ function Frame({ item, index, g }: { item: Detail; index: number; g: MotionValue
    ───────────────────────────────────────────── */
 function Caption({ item, index }: { item: Detail; index: number }) {
   return (
-    <div className="container-x absolute inset-x-0 bottom-0 pb-[max(24px,env(safe-area-inset-bottom))] lg:pb-12">
+    <div aria-hidden className="container-x absolute inset-x-0 bottom-0 pb-[max(24px,env(safe-area-inset-bottom))] lg:pb-12">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={item.id}
@@ -198,7 +212,7 @@ function Caption({ item, index }: { item: Detail; index: number }) {
               0{index + 1}
             </span>
             <span className="text-label text-subtle">/ 0{N}</span>
-            <span className="text-label ml-auto text-offwhite/45 lg:ml-6">{item.source}</span>
+            <span className="text-label ml-auto text-offwhite/55 lg:ml-6">{item.source}</span>
           </div>
           <h3 className="mt-4 flex items-baseline gap-4">
             <span className="text-display text-[clamp(44px,5.6vw,88px)]">{item.title}</span>
@@ -215,12 +229,12 @@ function Caption({ item, index }: { item: Detail; index: number }) {
 /** Оглавление деталей справа (desktop) */
 function Index({ active }: { active: number }) {
   return (
-    <ol className="absolute top-1/2 right-(--gutter) hidden -translate-y-1/2 space-y-3 lg:block" aria-label="Детали">
+    <ol aria-hidden className="absolute top-1/2 right-(--gutter) hidden -translate-y-1/2 space-y-3 lg:block">
       {items.map((item, i) => (
         <li
           key={item.id}
           className={`accent-${item.car} flex items-center justify-end gap-3 text-label transition-colors duration-500 ${
-            i === active ? "text-offwhite" : "text-offwhite/30"
+            i === active ? "text-offwhite" : "text-offwhite/55"
           }`}
         >
           <span>{item.title}</span>

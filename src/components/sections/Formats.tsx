@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useSpring, useTransform } from "motion/react";
 import { cars, formats, type Format } from "@/content/site";
@@ -9,6 +9,9 @@ import { MaskLine, Reveal } from "@/components/ui/Reveal";
 import { Button } from "@/components/ui/Button";
 
 const ease = [0.22, 1, 0.36, 1] as const;
+/** Кольцо фокуса на подписи, когда фокус у визуально скрытого radio */
+const focusRing =
+  "has-[:focus-visible]:outline has-[:focus-visible]:outline-1 has-[:focus-visible]:outline-offset-4 has-[:focus-visible]:outline-offwhite/70";
 
 /**
  * 05 — Форматы. Конфигуратор: автомобиль × глубина работы.
@@ -17,6 +20,7 @@ const ease = [0.22, 1, 0.36, 1] as const;
 export function Formats() {
   const [carIdx, setCarIdx] = useState(0);
   const [fmtIdx, setFmtIdx] = useState(1);
+  const formatName = `format-${useId()}`;
   const car = cars[carIdx];
   const format = formats.items[fmtIdx];
 
@@ -107,21 +111,24 @@ export function Formats() {
           <div className="lg:col-span-5">
             <CarSelector value={carIdx} onChange={setCarIdx} className="max-lg:hidden" />
 
-            <p className="text-label mt-2 text-offwhite/40 lg:mt-12">{formats.formatLabel}</p>
-            <div role="radiogroup" aria-label={formats.formatLabel} className="mt-4 border-t border-line">
+            <fieldset className="mt-2 min-w-0 lg:mt-12">
+            <legend className="text-label text-offwhite/55">{formats.formatLabel}</legend>
+            <div className="mt-4 border-t border-line">
               {formats.items.map((f, i) => (
                 <FormatRow
                   key={f.id}
+                  name={formatName}
                   format={f}
                   active={i === fmtIdx}
                   onSelect={() => setFmtIdx(i)}
                 />
               ))}
             </div>
+            </fieldset>
 
             <div className="mt-10 flex flex-wrap items-end justify-between gap-6">
               <div>
-                <p className="text-label text-offwhite/40">
+                <p className="text-label text-offwhite/55">
                   {formats.priceLabel} · {car.brand} {car.model} · {format.name}
                 </p>
                 <p className="mt-3 font-display text-[clamp(40px,4.4vw,64px)] leading-none tracking-[-0.04em]">
@@ -133,7 +140,7 @@ export function Formats() {
               <p className="font-mono text-[12px] text-offwhite/50">{format.duration}</p>
             </div>
 
-            <p className="mt-6 max-w-[44ch] text-[13px] leading-[1.6] text-offwhite/40">{formats.note}</p>
+            <p className="mt-6 max-w-[44ch] text-[13px] leading-[1.6] text-offwhite/55">{formats.note}</p>
             <Button href={formats.cta.href} size="lg" className="mt-8 max-sm:w-full">
               {formats.cta.label}
             </Button>
@@ -156,31 +163,37 @@ function CarSelector({
   onChange: (i: number) => void;
   className?: string;
 }) {
+  // У каждой копии (mobile / desktop) своя группа — иначе radio с одним name слились бы
+  const name = `car-${useId()}`;
   return (
-    <div className={className}>
-      <p className="text-label text-offwhite/40">{formats.carLabel}</p>
-      <div role="radiogroup" aria-label={formats.carLabel} className="mt-4 grid grid-cols-3 border-b border-line">
+    <fieldset className={`min-w-0 ${className}`}>
+      <legend className="text-label text-offwhite/55">{formats.carLabel}</legend>
+      <div className="mt-4 grid grid-cols-3 border-b border-line">
         {cars.map((c, i) => {
           const on = i === value;
           return (
-            <button
+            <label
               key={c.id}
-              type="button"
-              role="radio"
-              aria-checked={on}
-              onClick={() => onChange(i)}
-              className={`accent-${c.id} group relative flex items-baseline gap-2.5 pb-4 text-left`}
+              className={`accent-${c.id} group relative flex cursor-pointer items-baseline gap-2.5 pb-4 text-left ${focusRing}`}
             >
+              <input
+                type="radio"
+                name={name}
+                value={c.id}
+                checked={on}
+                onChange={() => onChange(i)}
+                className="sr-only"
+              />
               <span
                 className={`font-serif text-[18px] transition-colors duration-500 ${
-                  on ? "text-(--accent)" : "text-offwhite/30 group-hover:text-(--accent)"
+                  on ? "text-(--accent)" : "text-offwhite/55 group-hover:text-(--accent)"
                 }`}
               >
                 {c.numeral}
               </span>
               <span
                 className={`text-[14px] transition-colors duration-500 sm:text-[15px] ${
-                  on ? "text-offwhite" : "text-offwhite/45 group-hover:text-offwhite/80"
+                  on ? "text-offwhite" : "text-offwhite/55 group-hover:text-offwhite/80"
                 }`}
               >
                 {c.brand}
@@ -192,11 +205,11 @@ function CarSelector({
                   on ? "scale-x-100" : "scale-x-0"
                 }`}
               />
-            </button>
+            </label>
           );
         })}
       </div>
-    </div>
+    </fieldset>
   );
 }
 
@@ -204,23 +217,27 @@ function CarSelector({
    Формат работы
    ───────────────────────────────────────────── */
 function FormatRow({
+  name,
   format,
   active,
   onSelect,
 }: {
+  name: string;
   format: Format;
   active: boolean;
   onSelect: () => void;
 }) {
   return (
     <div className="border-b border-line">
-      <button
-        type="button"
-        role="radio"
-        aria-checked={active}
-        onClick={onSelect}
-        className="group flex w-full items-baseline gap-4 py-5 text-left"
-      >
+      <label className={`group flex w-full cursor-pointer items-baseline gap-4 py-5 text-left ${focusRing}`}>
+        <input
+          type="radio"
+          name={name}
+          value={format.id}
+          checked={active}
+          onChange={onSelect}
+          className="sr-only"
+        />
         <span
           aria-hidden
           className={`relative top-[-0.2em] size-2 shrink-0 self-center rounded-full border transition-colors duration-500 ${
@@ -229,14 +246,14 @@ function FormatRow({
         />
         <span
           className={`font-display text-[clamp(26px,2.4vw,34px)] leading-none font-medium tracking-[-0.03em] transition-colors duration-500 ${
-            active ? "text-offwhite" : "text-offwhite/45 group-hover:text-offwhite/80"
+            active ? "text-offwhite" : "text-offwhite/55 group-hover:text-offwhite/80"
           }`}
         >
           {format.name}
         </span>
-        <span className="text-serif-accent text-[18px] text-offwhite/45 max-sm:hidden">{format.subtitle}</span>
-        <span className="ml-auto font-mono text-[11px] text-offwhite/40">{format.duration}</span>
-      </button>
+        <span className="text-serif-accent text-[18px] text-offwhite/55 max-sm:hidden">{format.subtitle}</span>
+        <span className="ml-auto font-mono text-[11px] text-offwhite/55">{format.duration}</span>
+      </label>
 
       <AnimatePresence initial={false}>
         {active && (

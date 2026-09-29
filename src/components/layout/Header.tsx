@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
-import { nav, site } from "@/content/site";
+import { cta, nav, sections, site, type SectionId } from "@/content/site";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { MobileMenu } from "./MobileMenu";
@@ -12,6 +12,9 @@ export function Header() {
   const [solid, setSolid] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const active = useActiveSection();
+  const current = sections.find((x) => x.id === active);
 
   useMotionValueEvent(scrollY, "change", (y) => {
     const prev = scrollY.getPrevious() ?? 0;
@@ -21,6 +24,9 @@ export function Header() {
 
   useEffect(() => {
     document.documentElement.style.overflow = open ? "hidden" : "";
+    // Пока открыто меню, страница под ним недоступна для клавиатуры и скринридера
+    const main = document.querySelector("main");
+    if (main) main.inert = open;
   }, [open]);
 
   return (
@@ -42,21 +48,51 @@ export function Header() {
           }`}
         />
         <div className="container-x relative flex h-(--header-h) items-center justify-between gap-6">
-          <Logo />
+          <div className="flex min-w-0 items-center gap-5">
+            <Logo />
+            {/* Где я: номер и название текущего раздела (визуальная подсказка) */}
+            <p
+              aria-hidden
+              className={`flex min-w-0 items-center gap-3 transition-opacity duration-500 ${
+                current && !open ? "opacity-100" : "opacity-0"
+              }`}
+            >
+              <span className="h-3 w-px bg-line-strong" />
+              <span className="font-mono text-[11px] whitespace-nowrap text-offwhite/80 tabular-nums">
+                {current?.n ?? "01"}
+                <span className="text-offwhite/55"> / 0{sections.length}</span>
+              </span>
+              <span className="text-label truncate text-offwhite/55 max-sm:hidden lg:max-xl:hidden">{current?.label}</span>
+            </p>
+          </div>
 
           <nav aria-label="Основная навигация" className="hidden lg:block">
             <ul className="flex items-center gap-9">
-              {nav.map((item) => (
-                <li key={item.href}>
-                  <a
-                    href={item.href}
-                    className="group relative py-2 text-[13px] text-offwhite/70 transition-colors duration-300 hover:text-offwhite"
-                  >
-                    {item.label}
-                    <span className="absolute inset-x-0 bottom-0.5 h-px origin-right scale-x-0 bg-offwhite/60 transition-transform duration-500 ease-out-expo group-hover:origin-left group-hover:scale-x-100" />
-                  </a>
-                </li>
-              ))}
+              {nav.map((item) => {
+                const on = item.id === active;
+                return (
+                  <li key={item.href}>
+                    <a
+                      href={item.href}
+                      aria-current={on ? "true" : undefined}
+                      className={`group relative flex items-baseline gap-2 py-2 text-[13px] transition-colors duration-300 hover:text-offwhite ${
+                        on ? "text-offwhite" : "text-offwhite/70"
+                      }`}
+                    >
+                      <span className={`font-mono text-[11px] transition-colors ${on ? "text-offwhite/80" : "text-offwhite/55"}`}>
+                        {item.n}
+                      </span>
+                      {item.label}
+                      <span
+                        aria-hidden
+                        className={`absolute inset-x-0 bottom-0.5 h-px bg-offwhite/60 transition-transform duration-500 ease-out-expo ${
+                          on ? "origin-left scale-x-100" : "origin-right scale-x-0 group-hover:origin-left group-hover:scale-x-100"
+                        }`}
+                      />
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
@@ -67,10 +103,11 @@ export function Header() {
             >
               {site.phone}
             </a>
-            <Button href="#contact" className="max-md:hidden">
-              Записаться
+            <Button href={cta.href} className="max-md:hidden">
+              {cta.label}
             </Button>
             <button
+              ref={toggleRef}
               type="button"
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
@@ -95,7 +132,38 @@ export function Header() {
         </div>
       </motion.header>
 
-      <AnimatePresence>{open && <MobileMenu onClose={() => setOpen(false)} />}</AnimatePresence>
+      <AnimatePresence>{open && <MobileMenu onClose={() => setOpen(false)} toggleRef={toggleRef} />}</AnimatePresence>
     </>
   );
+}
+
+/**
+ * Активный раздел — тот, что пересекает середину экрана.
+ * Закреплённые сцены длинные, поэтому узкая полоса в центре надёжнее порогов видимости.
+ */
+function useActiveSection() {
+  const [active, setActive] = useState<SectionId | null>(null);
+  useEffect(() => {
+    const els = sections
+      .map((x) => document.getElementById(x.id))
+      .filter((el): el is HTMLElement => !!el);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) if (e.isIntersecting) setActive(e.target.id as SectionId);
+      },
+      { rootMargin: "-50% 0px -50% 0px" },
+    );
+    els.forEach((el) => io.observe(el));
+    // Над первым разделом (обложка) индикатор скрыт
+    const hero = document.getElementById("top");
+    const heroIo = hero
+      ? new IntersectionObserver(([e]) => e.isIntersecting && setActive(null), { rootMargin: "-50% 0px -50% 0px" })
+      : null;
+    if (hero) heroIo!.observe(hero);
+    return () => {
+      io.disconnect();
+      heroIo?.disconnect();
+    };
+  }, []);
+  return active;
 }

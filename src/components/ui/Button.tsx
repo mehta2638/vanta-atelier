@@ -1,9 +1,14 @@
 import type { ComponentProps } from "react";
 
-type Props = ComponentProps<"a"> & {
+type Common = {
   variant?: "solid" | "ghost";
   size?: "md" | "lg";
 };
+
+/** С href — ссылка (навигация), без href — настоящая <button> (действие) */
+type Props =
+  | (Common & ComponentProps<"a"> & { href: string })
+  | (Common & ComponentProps<"button"> & { href?: undefined });
 
 const sizes = {
   md: "h-11 px-5 text-[13px]",
@@ -14,13 +19,8 @@ const sizes = {
  * Solid — off-white плашка с чёрным текстом; при hover снизу поднимается
  * чуть более тёмный off-white (нейтрально, без цвета глав). Ghost — тонкая рамка.
  */
-export function Button({
-  variant = "solid",
-  size = "md",
-  className = "",
-  children,
-  ...rest
-}: Props) {
+export function Button(props: Props) {
+  const { variant = "solid", size = "md", className = "", children } = props;
   const base =
     "group/btn relative isolate inline-flex items-center justify-center gap-3 overflow-hidden rounded-full font-medium tracking-[-0.01em] whitespace-nowrap transition-colors duration-500 ease-out-expo";
   const look =
@@ -28,8 +28,8 @@ export function Button({
       ? "bg-offwhite text-black"
       : "border border-line-strong text-offwhite hover:border-offwhite/40";
 
-  return (
-    <a className={`${base} ${sizes[size]} ${look} ${className}`} {...rest}>
+  const inner = (
+    <>
       {variant === "solid" && (
         <span
           aria-hidden
@@ -38,7 +38,25 @@ export function Button({
       )}
       <span>{children}</span>
       <Arrow />
-    </a>
+    </>
+  );
+  const cls = `${base} ${sizes[size]} ${look} ${className}`;
+
+  if (props.href !== undefined) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { variant: _v, size: _s, className: _c, children: _ch, ...rest } = props;
+    return (
+      <a className={cls} {...rest}>
+        {inner}
+      </a>
+    );
+  }
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { variant: _v, size: _s, className: _c, children: _ch, ...rest } = props;
+  return (
+    <button type="button" className={`${cls} cursor-pointer disabled:cursor-default`} {...rest}>
+      {inner}
+    </button>
   );
 }
 

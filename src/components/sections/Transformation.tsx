@@ -50,6 +50,15 @@ export function Transformation() {
   const [touched, setTouched] = useState(false);
   const [peeled, setPeeled] = useState(false);
   const [busy, setBusy] = useState(false);
+  // Кнопки меняются местами — фокус переносим на появившуюся
+  const peelRef = useRef<HTMLButtonElement>(null);
+  const resetRef = useRef<HTMLButtonElement>(null);
+  const refocus = useRef(false);
+  useEffect(() => {
+    if (busy || !refocus.current) return;
+    refocus.current = false;
+    (peeled ? resetRef : peelRef).current?.focus();
+  }, [busy, peeled]);
 
   // ── Лампа: цель + пружина (инерция) ──────────
   const tx = useMotionValue(size.w * 0.5);
@@ -149,6 +158,7 @@ export function Transformation() {
   // ── Снять / вернуть ленту ──────────────────────
   async function onPeel() {
     if (busy) return;
+    refocus.current = true;
     setBusy(true);
     if (reduce) {
       peel.set(1);
@@ -170,6 +180,7 @@ export function Transformation() {
 
   async function onReset() {
     if (busy) return;
+    refocus.current = true;
     setBusy(true);
     setPeeled(false);
     if (reduce) {
@@ -304,7 +315,7 @@ export function Transformation() {
         <div className="container-x flex items-center gap-4 pt-[calc(var(--header-h)+clamp(8px,2vh,24px))]">
           <SectionLabel index="03">{copy.label}</SectionLabel>
           <span aria-hidden className="h-px flex-1 bg-line" />
-          <p className="text-label text-offwhite/45 max-sm:hidden">{copy.car}</p>
+          <p className="text-label text-offwhite/55 max-sm:hidden">{copy.car}</p>
         </div>
 
         <div className="flex-1" />
@@ -325,18 +336,17 @@ export function Transformation() {
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6, ease }}
+                    role="status"
                     className="text-label w-full text-(--accent)"
                   >
                     {copy.done}
                   </motion.p>
                   <Button
-                    href="#transformation"
+                    ref={resetRef}
                     variant="ghost"
                     size="lg"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      onReset();
-                    }}
+                    disabled={busy}
+                    onClick={onReset}
                     className="max-sm:w-full"
                   >
                     {copy.reset}
@@ -344,13 +354,10 @@ export function Transformation() {
                 </>
               ) : (
                 <Button
-                  href="#transformation"
+                  ref={peelRef}
                   size="lg"
-                  aria-disabled={busy}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onPeel();
-                  }}
+                  disabled={busy}
+                  onClick={onPeel}
                   className="max-sm:w-full"
                 >
                   {copy.peel}
@@ -358,7 +365,7 @@ export function Transformation() {
               )}
               {!peeled && (
                 <p
-                  className={`hint-in flex items-center gap-2.5 font-serif text-[15px] italic text-offwhite/35 transition-opacity duration-1000 max-sm:hidden ${
+                  className={`hint-in flex items-center gap-2.5 font-serif text-[15px] italic text-offwhite/55 transition-opacity duration-1000 max-sm:hidden ${
                     touched ? "opacity-0" : ""
                   }`}
                 >
@@ -367,7 +374,7 @@ export function Transformation() {
                 </p>
               )}
             </div>
-            <p className="mt-5 font-mono text-[9px] tracking-wide text-offwhite/25">{copy.disclaimer}</p>
+            <p className="mt-5 font-mono text-[11px] tracking-wide text-offwhite/55">{copy.disclaimer}</p>
           </div>
         </div>
       </div>

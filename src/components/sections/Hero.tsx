@@ -125,7 +125,7 @@ export function Hero() {
             <span aria-hidden className="relative h-px flex-1 bg-line-strong">
               <span className="absolute inset-y-0 left-0 w-16 bg-(--accent-line)" />
             </span>
-            <p className="text-label text-offwhite/45">
+            <p className="text-label text-offwhite/55">
               <span className="max-sm:hidden">Porsche · BMW · Mercedes — </span>MMXXVI
             </p>
           </Fade>
@@ -135,7 +135,7 @@ export function Hero() {
             delay={2.4}
             className="pointer-events-auto absolute top-[calc(var(--header-h)+clamp(40px,6vh,64px))] right-(--gutter) hidden w-[250px] lg:block"
           >
-            <p className="text-label text-offwhite/45">В этом выпуске</p>
+            <p className="text-label text-offwhite/55">В этом выпуске</p>
             <ul className="mt-4 space-y-3">
               {[bmw, mercedes].map((car) => (
                 <li key={car.id} className={`accent-${car.id}`}>
@@ -209,7 +209,7 @@ export function Hero() {
             className="mt-6 flex items-center justify-between border-t border-line pt-4 lg:hidden"
           >
             <p className="text-label text-offwhite/55">{hero.model}</p>
-            <p className="text-label text-offwhite/40">
+            <p className="text-label text-offwhite/55">
               <span className="text-(--accent)">I</span> / III
             </p>
           </Fade>

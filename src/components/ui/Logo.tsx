@@ -10,7 +10,7 @@ export function Logo({ className = "" }: { className?: string }) {
       <span className="font-display text-[19px] font-semibold tracking-[0.34em] md:text-[21px]">
         {site.name}
       </span>
-      <span className="text-label hidden text-[10px] text-muted sm:inline">
+      <span className="text-label hidden text-muted sm:inline">
         {site.descriptor}
       </span>
     </a>

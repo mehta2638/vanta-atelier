@@ -13,12 +13,31 @@ export const site = {
   telegram: "@vanta_atelier",
 };
 
-export const nav = [
-  { label: "Главы", href: "#chapters" },
-  { label: "Анатомия", href: "#anatomy" },
-  { label: "Трансформация", href: "#transformation" },
-  { label: "Услуги", href: "#services" },
-  { label: "Форматы", href: "#formats" },
+/**
+ * Главное действие сайта — одно и называется везде одинаково:
+ * шапка, мобильное меню, обложка, форматы, финальная форма.
+ */
+export const cta = { label: "Обсудить автомобиль", href: "#contact" };
+
+/** Разделы страницы: номер и название, как в метках секций */
+export const sections = [
+  { id: "chapters", n: "01", label: "Главы" },
+  { id: "anatomy", n: "02", label: "Анатомия" },
+  { id: "transformation", n: "03", label: "Трансформация" },
+  { id: "services", n: "04", label: "Услуги" },
+  { id: "formats", n: "05", label: "Форматы" },
+  { id: "protocol", n: "06", label: "Протокол" },
+  { id: "contact", n: "07", label: "Запись" },
+] as const;
+
+export type SectionId = (typeof sections)[number]["id"];
+
+/** Основная навигация — 4 пункта; путь к контактам — кнопка CTA */
+export const nav: { label: string; href: `#${SectionId}`; n: string; id: SectionId }[] = [
+  { label: "Главы", href: "#chapters", n: "01", id: "chapters" },
+  { label: "Услуги", href: "#services", n: "04", id: "services" },
+  { label: "Форматы", href: "#formats", n: "05", id: "formats" },
+  { label: "Протокол", href: "#protocol", n: "06", id: "protocol" },
 ];
 
 export const hero = {
@@ -28,7 +47,7 @@ export const hero = {
   model: "Porsche 911 GT3 RS",
   line: { lead: "Точность,", accent: "доведённая до", highlight: "блеска." },
   lead: "Частное ателье детейлинга для трёх характеров: Porsche 911, BMW M и Mercedes-AMG.",
-  cta: { label: "Записаться в ателье", href: "#contact" },
+  cta,
 };
 
 export type Car = {
@@ -306,7 +325,7 @@ export const formats = {
   formatLabel: "Формат",
   priceLabel: "Ориентир",
   note: "Итоговая смета — после осмотра и замера толщины ЛКП. Доплат по ходу работ не бывает.",
-  cta: { label: "Записаться на осмотр", href: "#contact" },
+  cta,
   items: [
     {
       id: "essential",
@@ -431,8 +450,14 @@ export const finale = {
   label: "Запись",
   title: { lead: "Автомобиль готов", accent: "к другому свету." },
   lead: "Расскажите об автомобиле и задаче — предложим программу и время для осмотра.",
-  cta: "Обсудить автомобиль",
+  cta: cta.label,
   fields: { name: "Имя", phone: "Телефон", car: "Автомобиль" },
+  required: "Обязательное поле",
+  errors: {
+    name: "Укажите, как к вам обращаться.",
+    phoneEmpty: "Укажите телефон — перезвоним, чтобы договориться об осмотре.",
+    phoneShort: "Номер выглядит неполным: нужно не меньше 10 цифр.",
+  },
   carOptions: ["Porsche 911", "BMW M", "Mercedes-AMG", "Другой"],
   note: "Финальная стоимость определяется после осмотра и замера толщины ЛКП.",
   success: {
