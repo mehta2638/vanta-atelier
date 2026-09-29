@@ -2,7 +2,7 @@
  * Тексты и данные сайта. Демонстрационный концепт:
  * контакты — заглушки, без реальных достижений, наград и клиентов.
  */
-import { details, media, type Media } from "./media";
+import { details, media, serviceMedia, type Media } from "./media";
 
 export const site = {
   name: "VANTA",
@@ -120,7 +120,7 @@ export const anatomy = {
       id: "headlight",
       title: "Фара",
       en: "Headlight",
-      source: "BMW M4",
+      source: "BMW M5",
       car: "bmw",
       text: "Поликарбонат мутнеет от ультрафиолета и песка. Полируем оптику и закрываем плёнкой — свет снова режет темноту.",
       note: "Оптика · полировка + PPF",
@@ -131,8 +131,8 @@ export const anatomy = {
       id: "body",
       title: "Кузов",
       en: "Body line",
-      source: "Mercedes CLS",
-      car: "mercedes",
+      source: "Porsche 911",
+      car: "porsche",
       text: "Линия плеча — место, где видна каждая волна лака. Коррекция идёт по свету, а не по таймеру.",
       note: "Лак · многоэтапная коррекция",
       image: details.body,
@@ -142,8 +142,8 @@ export const anatomy = {
       id: "wheel",
       title: "Колесо",
       en: "Wheel",
-      source: "Mercedes CLS",
-      car: "mercedes",
+      source: "Porsche 911 RS",
+      car: "porsche",
       text: "Тормозная пыль въедается в лак дисков. Снимаем колёса, чистим изнутри и защищаем керамикой.",
       note: "Диски · деконтаминация + керамика",
       image: details.wheel,
@@ -164,8 +164,8 @@ export const anatomy = {
       id: "light",
       title: "Отражение",
       en: "Reflection",
-      source: "Porsche 911 Turbo S",
-      car: "porsche",
+      source: "Mercedes CLS",
+      car: "mercedes",
       text: "Отражение — главный инструмент контроля. Если полоса света ломается на панели, работа не закончена.",
       note: "Контроль · инспекционный свет",
       image: details.light,
@@ -175,7 +175,7 @@ export const anatomy = {
       id: "paint",
       title: "Покрытие",
       en: "Coating",
-      source: "Porsche 911 Turbo S",
+      source: "Макро · лак",
       car: "porsche",
       text: "Керамика превращает воду в капли, а грязь — в гостя. Слой в пару микрон, который видно с первого дождя.",
       note: "ЛКП · керамическое покрытие",
@@ -228,7 +228,7 @@ export const services = {
       duration: "3–4 ч",
       price: "от 6 000 ₽",
       chapters: ["porsche", "bmw", "mercedes"],
-      image: details.paint,
+      image: serviceMedia.wash,
     },
     {
       id: "correction",
@@ -238,7 +238,7 @@ export const services = {
       duration: "1–3 дня",
       price: "от 35 000 ₽",
       chapters: ["porsche", "mercedes"],
-      image: details.body,
+      image: serviceMedia.correction,
     },
     {
       id: "ceramic",
@@ -248,7 +248,7 @@ export const services = {
       duration: "2–3 дня",
       price: "от 45 000 ₽",
       chapters: ["porsche", "bmw", "mercedes"],
-      image: details.light,
+      image: serviceMedia.ceramic,
     },
     {
       id: "ppf",
@@ -258,7 +258,7 @@ export const services = {
       duration: "2–5 дней",
       price: "от 90 000 ₽",
       chapters: ["porsche", "bmw"],
-      image: details.headlight,
+      image: serviceMedia.ppf,
     },
     {
       id: "interior",
@@ -268,7 +268,7 @@ export const services = {
       duration: "1 день",
       price: "от 18 000 ₽",
       chapters: ["mercedes"],
-      image: details.interior,
+      image: serviceMedia.interior,
     },
     {
       id: "wheels",
@@ -278,7 +278,7 @@ export const services = {
       duration: "1 день",
       price: "от 12 000 ₽",
       chapters: ["bmw", "mercedes"],
-      image: details.wheel,
+      image: serviceMedia.wheels,
     },
   ] satisfies Service[],
 };

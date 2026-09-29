@@ -86,7 +86,8 @@ function StickyFrame({ current }: { current: number }) {
                 alt={i === current ? it.image.alt : ""}
                 fill
                 sizes="(min-width: 1024px) 38vw, 1px"
-                className="grade object-cover"
+                placeholder="blur"
+                className="object-cover"
               />
             </div>
           ))}
@@ -193,7 +194,14 @@ function Row({
 
         {/* Миниатюра (mobile / tablet) */}
         <div className="relative aspect-square self-start overflow-hidden lg:hidden">
-          <Image src={item.image.src} alt="" fill sizes="120px" className="grade object-cover" />
+          <Image
+            src={item.image.src}
+            alt=""
+            fill
+            sizes="120px"
+            style={{ objectPosition: item.image.position }}
+            className="object-cover"
+          />
         </div>
       </div>
     </li>

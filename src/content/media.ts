@@ -35,6 +35,12 @@ import trBeforeWide from "@/assets/media/transformation-before-wide.jpg";
 import trAfterTall from "@/assets/media/transformation-after-tall.jpg";
 import trBeforeTall from "@/assets/media/transformation-before-tall.jpg";
 import trSwirls from "@/assets/media/transformation-swirls.webp";
+import svcWash from "@/assets/media/service-wash.jpg";
+import svcCorrection from "@/assets/media/service-correction.jpg";
+import svcCeramic from "@/assets/media/service-ceramic.jpg";
+import svcPpf from "@/assets/media/service-ppf.jpg";
+import svcInterior from "@/assets/media/service-interior.jpg";
+import svcWheels from "@/assets/media/service-wheels.jpg";
 
 export type Media = {
   src: StaticImageData;
@@ -105,21 +111,27 @@ export const media = {
 } satisfies Record<string, Record<string, Media>>;
 
 /** Крупные планы для «Анатомии» — кропы из оригиналов тех же съёмок */
+/**
+ * Крупные планы для «Анатомии». Единая обработка запечена в файлы
+ * (как у фотосерии «Услуг»): цвет ~20%, контраст, виньетка — утилита `grade` не нужна.
+ * Форматы под геометрию кадров: фара 1.84:1, кузов 4:1, колесо 1:1,
+ * салон 1.53:1, отражение ~4.3:1, покрытие — полноэкранный 16:10.
+ */
 export const details = {
   headlight: {
     src: detailHeadlight,
-    alt: "Светодиодная фара BMW M4 крупным планом",
-    credit: "unsplash 1614026480209, кроп",
+    alt: "Светодиодная фара BMW M5 и глянцевый капот крупным планом",
+    credit: "unsplash 1683791738119, кроп",
   },
   body: {
     src: detailBody,
-    alt: "Линия плеча чёрного Mercedes в студийном свете",
-    credit: "unsplash 1485291571150, кроп",
+    alt: "Передок Porsche 911: световая полоса на капоте, фара и грань крыла",
+    credit: "unsplash 1727947347770, кроп",
   },
   wheel: {
     src: detailWheel,
-    alt: "Колёсный диск Mercedes в луче студийного света",
-    credit: "unsplash 1485291571150, кроп",
+    alt: "Колесо Porsche 911 RS: центральная гайка, спицы и суппорт",
+    credit: "unsplash 1637087867447, кроп",
   },
   interior: {
     src: detailInterior,
@@ -128,13 +140,13 @@ export const details = {
   },
   light: {
     src: detailLight,
-    alt: "Сквозная световая полоса и надпись PORSCHE на корме 911 Turbo S",
-    credit: "unsplash 1611651338412, кроп",
+    alt: "Силуэт чёрного Mercedes CLS: полоса студийного света вдоль линии кузова",
+    credit: "unsplash 1485291571150, кроп",
   },
   paint: {
     src: detailPaint,
-    alt: "Капли воды на крышке моторного отсека и заднем стекле Porsche 911",
-    credit: "unsplash 1611651338412, кроп",
+    alt: "Капли воды на тёмном лаке двери и ручке — макро",
+    credit: "unsplash 1550565076, кроп",
   },
 } satisfies Record<string, Media>;
 
@@ -158,3 +170,50 @@ export const transformationMedia = {
   swirls: trSwirls,
   credit: "unsplash 1611821064430",
 };
+
+/**
+ * Фотосерия «04 — Услуги». Единая обработка запечена в файлы:
+ * кадр 4:5 по композиции, приглушённый цвет (~20%), общая виньетка.
+ * Поэтому на эти кадры НЕ нужна утилита `grade`.
+ * position — кадрирование квадратной миниатюры на mobile/tablet
+ * (в кадре 4:5 на desktop изображение показывается целиком).
+ * Новые фото: 1200×1500, та же обработка — иначе серия развалится.
+ */
+export const serviceMedia = {
+  wash: {
+    src: svcWash,
+    alt: "BMW X6 под активной пеной в тёмном моечном боксе",
+    position: "58% 42%",
+    credit: "unsplash 1633014041037",
+  },
+  correction: {
+    src: svcCorrection,
+    alt: "Мастер полирует чёрный кузов, в отражении на панели видны голограммы",
+    position: "50% 30%",
+    credit: "unsplash 1708805282706 (паутина царапин добавлена при обработке)",
+  },
+  ceramic: {
+    src: svcCeramic,
+    alt: "Капли воды собираются в бусины на чёрном лаке после керамики",
+    position: "50% 40%",
+    credit: "unsplash 1608382247609",
+  },
+  ppf: {
+    src: svcPpf,
+    alt: "Нанесение защитной плёнки на фару Mercedes",
+    position: "40% 42%",
+    credit: "unsplash 1632823469850",
+  },
+  interior: {
+    src: svcInterior,
+    alt: "Руль Porsche GT: алькантара, красная строчка, переключатели режимов",
+    position: "40% 34%",
+    credit: "unsplash 1699325565626",
+  },
+  wheels: {
+    src: svcWheels,
+    alt: "Колесо Porsche: карбон-керамический диск, суппорт и центральная гайка",
+    position: "50% 50%",
+    credit: "unsplash 1695270939393",
+  },
+} satisfies Record<string, Media>;

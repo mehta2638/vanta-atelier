@@ -16,9 +16,7 @@ import { MaskLine, Reveal } from "@/components/ui/Reveal";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 /** Где на кадре горит фонарь — возвращаем ему цвет, как в главе I */
-const lampGlow: Partial<Record<Detail["id"], string>> = {
-  light: "ellipse_46%_5%_at_50%_46%",
-};
+const lampGlow: Partial<Record<Detail["id"], string>> = {};
 
 const lineColor: Record<Detail["car"], string> = {
   porsche: "#8e1f2d",
@@ -150,7 +148,8 @@ function Frame({ item, index, g }: { item: Detail; index: number; g: MotionValue
             alt={item.image.alt}
             fill
             sizes={item.reveal === "circle" ? "(min-width: 1024px) 64vh, 80vw" : "(min-width: 1024px) 60vw, 150vw"}
-            className="grade object-cover"
+            placeholder="blur"
+            className="object-cover"
           />
           {lampGlow[item.id] && (
             <div
