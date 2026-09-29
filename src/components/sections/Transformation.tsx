@@ -217,7 +217,7 @@ export function Transformation() {
         {/* Мутный лак рассеивает свет: широкое мягкое пятно */}
         <Follow x={lx} y={ly} className="size-[calc(var(--lamp)*1.4)] bg-[radial-gradient(circle,rgb(237_235_230/0.16)_0%,rgb(237_235_230/0.06)_34%,transparent_68%)]" />
         {/* Паутина царапин вокруг точки света */}
-        <Follow x={lx} y={ly} rotate={still ? undefined : swirlRotate} className="size-[calc(var(--lamp)*1.35)] opacity-90">
+        <Follow x={lx} y={ly} rotate={still || coarse ? undefined : swirlRotate} className="size-[calc(var(--lamp)*1.35)] opacity-90">
           <Image src={media.swirls} alt="" fill sizes="440px" className="object-contain" />
         </Follow>
       </motion.div>
@@ -231,12 +231,21 @@ export function Transformation() {
         />
       </motion.div>
 
-      {/* Общее затемнение: светло только там, где лампа */}
-      <Follow
-        x={lx}
-        y={ly}
-        className="size-[300vmax] bg-[radial-gradient(circle,transparent_0%,transparent_2.4%,rgb(10_10_11/0.62)_8.5%)]"
-      />
+      {/* Общее затемнение: светло только там, где лампа.
+          На сенсорных экранах — статичная виньетка: гигантский движущийся
+          слой дорого композитить на телефоне, а сцена почти не меняется. */}
+      {coarse ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_75%_45%_at_50%_48%,rgb(10_10_11/0.2)_0%,rgb(10_10_11/0.6)_100%)]"
+        />
+      ) : (
+        <Follow
+          x={lx}
+          y={ly}
+          className="size-[300vmax] bg-[radial-gradient(circle,transparent_0%,transparent_2.4%,rgb(10_10_11/0.62)_8.5%)]"
+        />
+      )}
       <motion.div aria-hidden style={{ opacity: flash }} className="pointer-events-none absolute inset-0 bg-offwhite" />
 
       {/* ── Лента ─────────────────────────────── */}
@@ -288,7 +297,7 @@ export function Transformation() {
         aria-hidden
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgb(10_10_11/0.85)_0%,transparent_24%,transparent_58%,rgb(10_10_11/0.92)_100%)]"
       />
-      <div aria-hidden className="grain pointer-events-none absolute inset-0 overflow-hidden" />
+      {!coarse && <div aria-hidden className="grain pointer-events-none absolute inset-0 overflow-hidden" />}
 
       {/* ── Текст ─────────────────────────────── */}
       <div className="pointer-events-none relative flex h-full flex-col">
@@ -349,16 +358,16 @@ export function Transformation() {
               )}
               {!peeled && (
                 <p
-                  className={`text-label flex items-center gap-2 text-offwhite/45 transition-opacity duration-700 max-sm:hidden ${
+                  className={`hint-in flex items-center gap-2.5 font-serif text-[15px] italic text-offwhite/35 transition-opacity duration-1000 max-sm:hidden ${
                     touched ? "opacity-0" : ""
                   }`}
                 >
-                  <span className="size-1.5 animate-pulse rounded-full bg-offwhite/70" />
+                  <span aria-hidden className="h-px w-5 bg-offwhite/25" />
                   {coarse ? copy.hint.touch : copy.hint.mouse}
                 </p>
               )}
             </div>
-            <p className="text-label mt-5 text-[9px] text-offwhite/30">{copy.disclaimer}</p>
+            <p className="mt-5 font-mono text-[9px] tracking-wide text-offwhite/25">{copy.disclaimer}</p>
           </div>
         </div>
       </div>
