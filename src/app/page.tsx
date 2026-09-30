@@ -7,6 +7,7 @@ import { Services } from "@/components/sections/Services";
 import { Formats } from "@/components/sections/Formats";
 import { Protocol } from "@/components/sections/Protocol";
 import { Finale } from "@/components/sections/Finale";
+import { Footer } from "@/components/layout/Footer";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
         <Protocol />
         <Finale />
       </main>
+      <Footer />
     </>
   );
 }

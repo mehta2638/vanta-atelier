@@ -202,7 +202,7 @@ function Mark({ mark, kind, i }: { mark: ProtocolMark; kind: number; i: number }
       style={{ left: `${mark.x}%`, top: `${mark.y}%` }}
       className={`absolute flex -translate-y-1/2 items-center ${
         left ? "-translate-x-[calc(100%-4px)] flex-row-reverse" : "-translate-x-1"
-      } ${i > 2 ? "max-sm:hidden" : ""}`}
+      } ${mark.mobile ? "" : "max-sm:hidden"}`}
     >
       {/* 01 — точка замера, 02 — пунктирное кольцо маскировки, 03 — зона работы */}
       {kind === 1 ? (
@@ -216,11 +216,11 @@ function Mark({ mark, kind, i }: { mark: ProtocolMark; kind: number; i: number }
       <motion.span
         variants={{ hidden: { scaleX: 0 }, shown: { scaleX: 1 } }}
         transition={{ duration: 0.5, delay: 0.2 + i * 0.08, ease }}
-        className={`h-px w-[clamp(18px,3vw,44px)] bg-offwhite/50 ${left ? "origin-right" : "origin-left"}`}
+        className={`h-px w-[clamp(24px,3vw,44px)] bg-offwhite/50 ${left ? "origin-right" : "origin-left"}`}
       />
       <span className={`px-2 whitespace-nowrap [text-shadow:0_1px_8px_rgb(0_0_0/0.9)] ${left ? "text-right" : ""}`}>
-        <span className="text-label block text-offwhite/70">{mark.label}</span>
-        {mark.value && <span className="block font-mono text-[11px] text-offwhite sm:text-[13px]">{mark.value}</span>}
+        <span className="text-label block text-offwhite/75 max-sm:text-[12px] max-sm:tracking-[0.08em]">{mark.label}</span>
+        {mark.value && <span className="block font-mono text-[13px] text-offwhite">{mark.value}</span>}
       </span>
     </motion.div>
   );

@@ -133,7 +133,7 @@ export type Detail = {
 
 export const anatomy = {
   label: "Анатомия",
-  title: ["Качество живёт", "в деталях."],
+  title: ["Качество —", "в деталях."],
   lead: "Шесть мест, по которым видно, был ли автомобиль в руках мастера. Листайте — деталь за деталью.",
   items: [
     {
@@ -374,7 +374,15 @@ export const formats = {
    06 — Протокол
    Метки — координаты в % от кадра studioCar.
    ───────────────────────────────────────────── */
-export type ProtocolMark = { x: number; y: number; label: string; value?: string; side?: "left" | "right" };
+export type ProtocolMark = {
+  x: number;
+  y: number;
+  label: string;
+  value?: string;
+  side?: "left" | "right";
+  /** Показывать на телефоне (там остаются 2 главные метки этапа) */
+  mobile?: true;
+};
 
 export type ProtocolStage = {
   n: string;
@@ -397,9 +405,9 @@ export const protocol = {
       text: "Осмотр кузова под инспекционным светом, замер толщины ЛКП, фиксация состояния.",
       specs: [["Свет", "5000–6500 K"], ["Замер", "толщиномер, 40+ точек"], ["Итог", "карта кузова и смета"]],
       marks: [
-        { x: 25, y: 42, label: "Капот", value: "118 мкм" },
+        { x: 25, y: 42, label: "Капот", value: "118 мкм", mobile: true },
         { x: 55, y: 13, label: "Крыша", value: "124 мкм" },
-        { x: 61, y: 50, label: "Дверь", value: "131 мкм", side: "right" },
+        { x: 61, y: 50, label: "Дверь", value: "131 мкм", side: "right", mobile: true },
         { x: 88, y: 48, label: "Крыло", value: "96 мкм", side: "right" },
         { x: 17, y: 74, label: "Бампер", value: "142 мкм" },
       ],
@@ -411,8 +419,8 @@ export const protocol = {
       text: "Мойка, деконтаминация, маскировка резины, пластика и оптики.",
       specs: [["Мойка", "двухфазная, pH-нейтральная"], ["Очистка", "глина, от металла и битума"], ["Маскировка", "кромки, уплотнители, оптика"]],
       marks: [
-        { x: 44, y: 52, label: "Оптика" },
-        { x: 72, y: 33, label: "Зеркало", side: "right" },
+        { x: 44, y: 52, label: "Оптика", mobile: true },
+        { x: 72, y: 33, label: "Зеркало", side: "right", mobile: true },
         { x: 20, y: 64, label: "Решётка", side: "right" },
         { x: 85, y: 40, label: "Воздухозаборник" },
       ],
@@ -424,8 +432,8 @@ export const protocol = {
       text: "Коррекция, защита, интерьер — состав зависит от выбранной программы.",
       specs: [["Коррекция", "1–3 этапа"], ["Защита", "полиуретан · керамика"], ["Салон", "кожа · алькантара"]],
       marks: [
-        { x: 17, y: 70, label: "PPF · фронт", side: "right" },
-        { x: 48, y: 24, label: "Салон" },
+        { x: 17, y: 70, label: "PPF · фронт", side: "right", mobile: true },
+        { x: 48, y: 24, label: "Салон", mobile: true },
         { x: 64, y: 55, label: "Коррекция · двери" },
         { x: 56, y: 12, label: "Керамика · кузов", side: "right" },
       ],

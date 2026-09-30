@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Image from "next/image";
 import { AnimatePresence, motion, useInView } from "motion/react";
 import { cars, services, type Service } from "@/content/site";
@@ -28,22 +28,20 @@ export function Services() {
       className="relative border-t border-line bg-black py-[clamp(112px,18vh,220px)]"
     >
       <div className="container-x">
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-8">
-            <SectionLabel index="04">{services.label}</SectionLabel>
-            <h2 id="services-title" className="mt-8 text-display text-[clamp(44px,6.6vw,112px)] md:mt-10">
-              <MaskLine>{services.title.lead}</MaskLine>
-              <MaskLine delay={0.08}>
-                <span className="text-serif-accent text-[1.12em]">{services.title.accent}</span>
-              </MaskLine>
-            </h2>
-          </div>
-          <Reveal delay={0.2} className="lg:col-span-4 lg:pb-4">
-            <p className="max-w-[400px] text-[15px] leading-[1.65] text-muted lg:ml-auto">{services.lead}</p>
-          </Reveal>
-        </div>
+        {/* Вступление-«строка оглавления»: заголовок во всю ширину, лид под линией */}
+        <SectionLabel index="04">{services.label}</SectionLabel>
+        <h2 id="services-title" className="mt-8 text-display text-[clamp(40px,8.2vw,150px)] md:mt-10">
+          <MaskLine>
+            {services.title.lead} <span className="whitespace-nowrap text-offwhite/40">{services.title.accent}</span>
+          </MaskLine>
+        </h2>
+        <Reveal delay={0.2} className="mt-8 grid gap-4 border-t border-line pt-6 md:mt-10 md:grid-cols-12">
+          <p className="text-label text-offwhite/55 md:col-span-3">06 работ · цены от</p>
+          <p className="max-w-[560px] text-[15px] leading-[1.65] text-muted md:col-span-9">{services.lead}</p>
+        </Reveal>
 
-        <div className="mt-[clamp(56px,10vh,120px)] grid gap-x-[6vw] lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
+        {/* На mobile — блочный поток (sticky работает внутри блока), на desktop — сетка */}
+        <div className="mt-[clamp(56px,10vh,120px)] lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-[6vw]">
           <StickyFrame current={current} />
 
           <ol className="border-t border-line" onPointerLeave={() => setHover(null)}>
@@ -71,9 +69,10 @@ export function Services() {
 function StickyFrame({ current }: { current: number }) {
   const item = items[current];
   return (
-    <div className="max-lg:hidden">
-      <div className="sticky top-[calc(var(--header-h)+32px)]">
-        <div className="relative aspect-4/5 overflow-hidden bg-graphite-900">
+    // mobile: кадр закреплён над списком, строки уходят под него (фон — цвет секции)
+    <div className="sticky top-0 z-10 -mx-(--gutter) bg-graphite-950 px-(--gutter) pt-[calc(var(--header-h)+8px)] pb-5 lg:static lg:z-auto lg:mx-0 lg:bg-transparent lg:p-0">
+      <div className="lg:sticky lg:top-[calc(var(--header-h)+32px)]">
+        <div className="relative mx-auto aspect-4/5 max-h-[50svh] overflow-hidden bg-graphite-900 lg:max-h-none">
           {items.map((it, i) => (
             <div
               key={it.id}
@@ -85,7 +84,7 @@ function StickyFrame({ current }: { current: number }) {
                 src={it.image.src}
                 alt={i === current ? it.image.alt : ""}
                 fill
-                sizes="(min-width: 1024px) 38vw, 1px"
+                sizes="(min-width: 1024px) 38vw, 90vw"
                 placeholder="blur"
                 className="object-cover"
               />
@@ -100,7 +99,7 @@ function StickyFrame({ current }: { current: number }) {
             <span key={c} aria-hidden className={`absolute size-3.5 border-offwhite/40 ${c}`} />
           ))}
 
-          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-7">
+          <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 lg:p-7">
             <AnimatePresence mode="wait" initial={false}>
               <motion.p
                 key={item.id}
@@ -110,8 +109,8 @@ function StickyFrame({ current }: { current: number }) {
                 transition={{ duration: 0.5, ease }}
                 className="flex items-baseline gap-4"
               >
-                <span className="font-serif text-[72px] leading-none">0{current + 1}</span>
-                <span className="text-serif-accent text-[26px] text-offwhite/70">{item.en}</span>
+                <span className="font-serif text-[56px] leading-none lg:text-[72px]">0{current + 1}</span>
+                <span className="text-serif-accent text-[20px] text-offwhite/70 lg:text-[26px]">{item.en}</span>
               </motion.p>
             </AnimatePresence>
             <p className="text-label text-offwhite/55">/ 0{items.length}</p>
@@ -141,8 +140,10 @@ function Row({
   onCenter: (i: number) => void;
 }) {
   const ref = useRef<HTMLLIElement>(null);
-  // Строка «активна», когда проходит узкую полосу в центре экрана
-  const centered = useInView(ref, { margin: "-48% 0px -48% 0px" });
+  // Строка «активна», когда проходит узкую полосу: на desktop — центр экрана,
+  // на mobile — середина окна под закреплённым кадром
+  const compact = useCompact();
+  const centered = useInView(ref, { margin: compact ? "-80% 0px -18% 0px" : "-48% 0px -48% 0px" });
   useEffect(() => {
     if (centered) onCenter(index);
   }, [centered, onCenter, index]);
@@ -156,12 +157,12 @@ function Row({
       {/* Линия активной строки */}
       <span
         aria-hidden
-        className={`absolute -top-px left-0 h-px w-full origin-left bg-offwhite/70 transition-transform duration-700 ease-out-expo max-lg:hidden ${
+        className={`absolute -top-px left-0 h-px w-full origin-left bg-offwhite/70 transition-transform duration-700 ease-out-expo ${
           active ? "scale-x-100" : "scale-x-0"
         }`}
       />
 
-      <div className="grid grid-cols-[1fr_88px] gap-x-5 py-7 sm:grid-cols-[1fr_120px] lg:grid-cols-[56px_1fr] lg:gap-x-6 lg:py-10">
+      <div className="grid py-7 lg:grid-cols-[56px_1fr] lg:gap-x-6 lg:py-10">
         <span className="font-mono text-[12px] text-subtle max-lg:hidden lg:pt-3">0{index + 1}</span>
 
         <div className="min-w-0">
@@ -192,17 +193,6 @@ function Row({
           </div>
         </div>
 
-        {/* Миниатюра (mobile / tablet) */}
-        <div className="relative aspect-square self-start overflow-hidden lg:hidden">
-          <Image
-            src={item.image.src}
-            alt=""
-            fill
-            sizes="120px"
-            style={{ objectPosition: item.image.position }}
-            className="object-cover"
-          />
-        </div>
       </div>
     </li>
   );
@@ -230,5 +220,19 @@ function Chapters({ ids }: { ids: Service["chapters"] }) {
         </span>
       ))}
     </span>
+  );
+}
+
+const COMPACT = "(max-width: 1023px)";
+/** true на mobile / tablet, безопасно для гидратации */
+function useCompact() {
+  return useSyncExternalStore(
+    (cb) => {
+      const mq = window.matchMedia(COMPACT);
+      mq.addEventListener("change", cb);
+      return () => mq.removeEventListener("change", cb);
+    },
+    () => window.matchMedia(COMPACT).matches,
+    () => false,
   );
 }

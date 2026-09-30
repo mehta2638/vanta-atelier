@@ -25,8 +25,7 @@ export function Header() {
   useEffect(() => {
     document.documentElement.style.overflow = open ? "hidden" : "";
     // Пока открыто меню, страница под ним недоступна для клавиатуры и скринридера
-    const main = document.querySelector("main");
-    if (main) main.inert = open;
+    for (const el of document.querySelectorAll<HTMLElement>("main, footer")) el.inert = open;
   }, [open]);
 
   return (

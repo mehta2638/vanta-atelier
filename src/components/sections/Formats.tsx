@@ -31,10 +31,16 @@ export function Formats() {
       className={`accent-${car.id} relative border-t border-line bg-graphite-950 py-[clamp(112px,18vh,220px)]`}
     >
       <div className="container-x">
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-8">
-            <SectionLabel index="05">{formats.label}</SectionLabel>
-            <h2 id="formats-title" className="mt-8 text-display text-[clamp(44px,6.6vw,112px)] md:mt-10">
+        {/* Вступление зеркально «Главам»: лид слева, заголовок справа */}
+        <SectionLabel index="05">{formats.label}</SectionLabel>
+        <div className="mt-8 grid gap-8 md:mt-10 lg:grid-cols-12 lg:items-end">
+          <Reveal delay={0.2} className="lg:order-1 lg:col-span-4 lg:pb-4">
+            <p className="max-w-[360px] border-l border-(--accent-line) pl-5 text-[15px] leading-[1.65] text-muted transition-colors duration-700">
+              {formats.lead}
+            </p>
+          </Reveal>
+          <div className="lg:order-2 lg:col-span-8 lg:text-right">
+            <h2 id="formats-title" className="text-display text-[clamp(44px,6.6vw,112px)]">
               <MaskLine>{formats.title.lead}</MaskLine>
               <MaskLine delay={0.08}>
                 <span className="text-serif-accent text-[1.12em] text-(--accent) transition-colors duration-700">
@@ -43,9 +49,6 @@ export function Formats() {
               </MaskLine>
             </h2>
           </div>
-          <Reveal delay={0.2} className="lg:col-span-4 lg:pb-4">
-            <p className="max-w-[400px] text-[15px] leading-[1.65] text-muted lg:ml-auto">{formats.lead}</p>
-          </Reveal>
         </div>
 
         <div className="mt-[clamp(56px,10vh,112px)] grid gap-10 lg:grid-cols-12 lg:gap-[4vw]">

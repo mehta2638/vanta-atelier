@@ -47,20 +47,18 @@ export function Anatomy() {
   return (
     <section id="anatomy" aria-labelledby="anatomy-title" className="relative bg-black">
       <div className="container-x pt-[clamp(112px,18vh,220px)] pb-[clamp(48px,8vh,96px)]">
-        <div className="grid gap-10 lg:grid-cols-12 lg:items-end">
-          <div className="lg:col-span-8">
-            <SectionLabel index="02">{anatomy.label}</SectionLabel>
-            <h2 id="anatomy-title" className="mt-8 text-display text-[clamp(44px,6.6vw,112px)] md:mt-10">
-              <MaskLine>{anatomy.title[0]}</MaskLine>
-              <MaskLine delay={0.08}>
-                <span className="text-offwhite/40">в </span>
-                <span className="text-serif-accent text-[1.12em] text-offwhite">деталях.</span>
-              </MaskLine>
-            </h2>
-          </div>
-          <Reveal delay={0.2} className="lg:col-span-4 lg:pb-4">
-            <p className="max-w-[380px] text-[15px] leading-[1.65] text-muted lg:ml-auto">{anatomy.lead}</p>
+        {/* Вступление-«обложка»: по центру, заголовок одной строкой, без курсива */}
+        <div className="flex flex-col items-center text-center">
+          <SectionLabel index="02">{anatomy.label}</SectionLabel>
+          <h2 id="anatomy-title" className="mt-8 text-display text-[clamp(40px,7.4vw,128px)] md:mt-10">
+            <MaskLine>
+              {anatomy.title[0]} <span className="whitespace-nowrap text-offwhite/40">{anatomy.title[1]}</span>
+            </MaskLine>
+          </h2>
+          <Reveal delay={0.2}>
+            <p className="mt-8 max-w-[440px] text-[15px] leading-[1.65] text-muted">{anatomy.lead}</p>
           </Reveal>
+          <span aria-hidden className="mt-10 h-12 w-px bg-line-strong" />
         </div>
       </div>
 
